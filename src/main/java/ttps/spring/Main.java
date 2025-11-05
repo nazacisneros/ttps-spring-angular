@@ -24,23 +24,16 @@ public class Main {
         PuntajeRepository puntajeRepo = ctx.getBean(PuntajeRepository.class);
         AvistamientoRepository avistamientoRepo = ctx.getBean(AvistamientoRepository.class);
         MedallaRepository medallaRepo = ctx.getBean(MedallaRepository.class);
-
-        // ======== ENTIDADES BÁSICAS ========
         Coordenada coord = new Coordenada("-34.9214", "-57.9544");
-
         Ciudad ciudad = new Ciudad("La Plata", coord);
-
         Barrio barrio = new Barrio("Centro", ciudad);
         barrioRepo.guardar(barrio);  // Luego el barrio, que referencia la ciudad
-
         Usuario usuario = new Usuario();
         usuario.setNombre("Naza");
         usuario.setEmail("naza@test.com");
         usuario.setContrasenia("1234");
-
         Mascota mascota = new Mascota("Toby", "Mediano", "Marrón", "Labrador amistoso", "Perdido");
-        mascotaRepo.guardar(mascota);  // Se persiste la mascota
-
+        mascotaRepo.guardar(mascota);
         Usuario usuario2 = new Usuario();
         usuario.setNombre("Nazaa");
         usuario.setEmail("nazaa@test.com");
