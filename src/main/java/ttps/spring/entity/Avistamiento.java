@@ -11,16 +11,19 @@ public class Avistamiento extends Registro {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long avistamiento_id;
     private String comentario;
-    //private List<Byte[]> fotos;
+    // private List<Byte[]> fotos;
     @ManyToOne
     private Mascota mascota;
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario_avistador;
 
-    public Avistamiento() {}
+    // probando
+    public Avistamiento() {
+    }
 
-    public Avistamiento(LocalDate fecha, LocalDateTime hora, Coordenada coordenada, Mascota mascota, Usuario usuario_publicador) {
+    public Avistamiento(LocalDate fecha, LocalDateTime hora, Coordenada coordenada, Mascota mascota,
+            Usuario usuario_publicador) {
         super(fecha, hora, coordenada);
         this.mascota = mascota;
         this.usuario_avistador = usuario_publicador;
@@ -42,14 +45,15 @@ public class Avistamiento extends Registro {
         this.comentario = comentario;
     }
 
-    /* public List<Byte[]> getFotos() {
-        return fotos;
-    }
-
-    public void setFotos(List<Byte[]> fotos) {
-        this.fotos = fotos;
-    }
-
+    /*
+     * public List<Byte[]> getFotos() {
+     * return fotos;
+     * }
+     * 
+     * public void setFotos(List<Byte[]> fotos) {
+     * this.fotos = fotos;
+     * }
+     * 
      */
 
     public Mascota getMascota() {
