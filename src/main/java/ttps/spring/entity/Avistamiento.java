@@ -16,17 +16,17 @@ public class Avistamiento extends Registro {
     private Mascota mascota;
     @ManyToOne
     @JoinColumn(name = "usuario_id")
-    private Usuario usuario_avistador;
+    private Usuario usuarioAvistador;
 
-    // probando
+    // probando asd
     public Avistamiento() {
     }
 
     public Avistamiento(LocalDate fecha, LocalDateTime hora, Coordenada coordenada, Mascota mascota,
-            Usuario usuario_publicador) {
+            Usuario usuarioAvistador) {
         super(fecha, hora, coordenada);
         this.mascota = mascota;
-        this.usuario_avistador = usuario_publicador;
+        this.usuarioAvistador = usuarioAvistador;
     }
 
     public Long getId() {
@@ -64,11 +64,11 @@ public class Avistamiento extends Registro {
         this.mascota = mascota;
     }
 
-    public Usuario getUsuario_publicador() {
-        return usuario_avistador;
+    public Usuario getUsuario_avistador() {
+        return usuarioAvistador;
     }
 
-    public void setUsuario_publicador(Usuario usuario_publicador) {
-        this.usuario_avistador = usuario_publicador;
+    public void setUsuario_avistador(Usuario usuarioAvistador) {
+        this.usuarioAvistador = usuarioAvistador;
     }
 }

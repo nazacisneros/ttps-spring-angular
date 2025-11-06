@@ -26,10 +26,12 @@ public class Usuario {
     protected Ranking ranking;
     @OneToMany(mappedBy = "usuario_puntaje", cascade = CascadeType.ALL)
     protected List<Puntaje> puntajes;
-    @OneToMany(mappedBy = "usuario_avistador", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "usuarioAvistador", cascade = CascadeType.ALL)
     protected List<Avistamiento> avistamientos_publicados;
-    @OneToMany(mappedBy = "usuario_publicador", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "usuarioPublicador", cascade = CascadeType.ALL)
     protected List<Publicacion> publicaciones;
+    @OneToMany(mappedBy = "mascota_id", cascade = CascadeType.ALL)
+    protected List<Mascota> mascotas;
 
     //este constructor vacio es requerido por JPA
     public Usuario() {}
@@ -71,6 +73,10 @@ public class Usuario {
 
     public void registrarPublicacion(Publicacion publicacion) {
         this.publicaciones.add(publicacion);
+    }
+
+    public void registrarMascota(Mascota mascota) {
+        this.mascotas.add(mascota);
     }
 
     public void registrarAvistamiento(Mascota mascota, LocalDate fecha, LocalDateTime hora, Coordenada coordenada) {
@@ -193,4 +199,8 @@ public class Usuario {
     public void setPublicaciones(List<Publicacion> publicaciones) {
         this.publicaciones = publicaciones;
     }
+
+    public void setMascotas(List<Mascota> mascotas) {this.mascotas = mascotas;}
+
+    public List<Mascota> getMascotas() {return mascotas;}
 }

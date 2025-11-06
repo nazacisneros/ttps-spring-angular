@@ -1,0 +1,446 @@
+
+## 1. **GenericService - La base de todo**
+
+```java
+public abstract class GenericService<T, ID>
+```
+
+**¿Qué hace?**
+- Es una clase **genérica** que funciona con cualquier entidad (`T`) y cualquier tipo de ID (`ID`)
+- Contiene todos los métodos CRUD básicos que TODOS los services necesitan
+- Es `abstract` porque nunca la instancias directamente, solo la extiendes
+
+**Métodos que incluye:**
+- `listar()` - Obtener todas las entidades
+- `obtener(ID)` - Buscar por ID (devuelve Optional)
+- `obtenerOError(ID)` - Buscar por ID o lanzar excepción
+- `crear(T)` - Crear nueva entidad
+- `actualizar(ID, T)` - Actualizar existente
+- `eliminar(ID)` - Eliminar por ID
+- `existe(ID)` - Verificar si existe
+- `contar()` - Contar total
+
+**¿Por qué métodos abstractos?**
+```java
+protected abstract JpaRepository<T, ID> getRepository();
+protected abstract String getEntityName();
+```
+- Cada service hijo debe implementarlos
+- `getRepository()` devuelve el repository específico (UsuarioRepository, MascotaRepository, etc.)
+- `getEntityName()` devuelve el nombre para mensajes de error ("Usuario", "Mascota", etc.)
+
+---
+
+## 2. **UsuarioService - Service específico**
+
+```java
+public class UsuarioService extends GenericService<Usuario, Long>
+```
+
+**¿Qué hace?**
+- **Hereda** todos los métodos CRUD de `GenericService`
+- Solo agrega métodos **específicos** de Usuario
+
+**Métodos heredados automáticamente:**
+```java
+usuarioService.listar()         // ✅ Ya funciona sin código
+usuarioService.obtener(1L)      // ✅ Ya funciona sin código
+usuarioService.crear(usuario)   // ✅ Ya funciona sin código
+```
+
+**Métodos propios de Usuario:**
+```java
+registrar(RegistroRequest)      // Lógica específica: validar email único
+login(LoginRequest)             // Lógica específica: verificar contraseña
+editarPerfil(...)               // Lógica específica: actualizar solo ciertos campos
+buscarPorEmail(String)          // Método que solo Usuario necesita
+deshabilitarUsuario(Long)       // Método que solo Usuario necesita
+```
+
+**Ejemplo de método específico:**
+```java
+public Usuario registrar(RegistroRequest request) {
+    // 1. Validación específica de negocio
+    if (repository.findByEmail(request.getEmail()).isPresent()) {
+        throw new IllegalArgumentException("El email ya está registrado");
+    }
+    
+    // 2. Lógica específica de Usuario
+    Usuario usuario = new Usuario();
+    usuario.setNombre(request.getNombre());
+    // ... más campos específicos
+    usuario.setCondicion(true);
+    usuario.setEsAdmin(false);
+    
+    // 3. Usa el método heredado para guardar
+    return repository.save(usuario);
+}
+```
+
+---
+
+## 3. **MascotaService - Otro service específico**
+
+```java
+public class MascotaService extends GenericService<Mascota, Long>
+```
+
+**¿Qué hace?**
+- También hereda TODOS los métodos CRUD
+- Agrega métodos específicos de Mascota
+
+**Métodos propios:**
+```java
+crearMascota(usuarioId, mascota)     // Asocia mascota con usuario
+listarPorUsuario(usuarioId)          // Solo las del usuario
+listarPerdidas()                     // Solo las perdidas
+editarMascota(usuarioId, id, ...)    // Verifica permisos antes
+eliminarMascota(usuarioId, id)       // Verifica permisos antes
+marcarComoPerdida(id)                // Cambia estado
+```
+
+**Ejemplo con validación de permisos:**
+```java
+public Mascota editarMascota(Long usuarioId, Long mascotaId, Mascota datos) {
+    Mascota mascota = obtenerOError(mascotaId); // Método heredado
+    
+    // Validación específica: verificar que sea dueño
+    if (!mascota.getUsuario().getId().equals(usuarioId)) {
+        throw new IllegalArgumentException("No tienes permiso");
+    }
+    
+    // Actualizar solo campos permitidos
+    if (datos.getNombre() != null) {
+        mascota.setNombre(datos.getNombre());
+    }
+    
+    return repository.save(mascota);
+}
+```
+
+---
+
+## 4. **AvistamientoService - Service con relaciones**
+
+```java
+public class AvistamientoService extends GenericService<Avistamiento, Long>
+```
+
+**¿Qué hace?**
+- Hereda CRUD básico
+- **Inyecta otros services** para trabajar con relaciones
+
+```java
+private final AvistamientoRepository repository;
+private final UsuarioService usuarioService;    // Para validar usuario
+private final MascotaService mascotaService;    // Para validar mascota
+```
+
+**Método que usa múltiples services:**
+```java
+public Avistamiento crearAvistamiento(Long usuarioId, Long mascotaId, Avistamiento avistamiento) {
+    // Validar que existan usando otros services
+    Usuario usuario = usuarioService.obtenerOError(usuarioId);
+    Mascota mascota = mascotaService.obtenerOError(mascotaId);
+    
+    // Establecer relaciones
+    avistamiento.setUsuario_avistador(usuario);
+    avistamiento.setMascota(mascota);
+    avistamiento.setFecha(LocalDate.now());
+    
+    // Registrar en el usuario
+    usuario.registrarAvistamiento(avistamiento);
+    
+    return repository.save(avistamiento);
+}
+```
+
+---
+
+## 5. **DTOs (Data Transfer Objects)**
+
+**¿Qué son?**
+- Objetos simples para transferir datos entre cliente y servidor
+- **No son entidades** - no tienen lógica de negocio ni relaciones JPA
+
+**LoginRequest:**
+```java
+public class LoginRequest {
+    private String email;
+    private String contrasenia;
+}
+```
+- Cliente envía: `{ "email": "...", "contrasenia": "..." }`
+- Servidor recibe este DTO y lo valida
+
+**RegistroRequest:**
+```java
+public class RegistroRequest {
+    private String nombre;
+    private String apellido;
+    private String email;
+    private String telefono;
+    private String contrasenia;
+}
+```
+- Cliente envía datos de registro
+- Servidor los convierte a entidad `Usuario`
+
+**LoginResponse:**
+```java
+public class LoginResponse {
+    private Long id;
+    private String nombre;
+    private String email;
+    private boolean esAdmin;
+    private String token; // Para JWT futuro
+}
+```
+- Servidor responde con datos del usuario logueado
+- **NO envía la contraseña** por seguridad
+
+**¿Por qué usar DTOs?**
+```java
+// ❌ SIN DTOs: Expones toda la entidad
+return usuario; // Incluye contraseña, relaciones, etc.
+
+// ✅ CON DTOs: Solo envías lo necesario
+return new LoginResponse(usuario.getId(), usuario.getNombre(), ...);
+```
+
+---
+
+## 6. **Repositories con métodos personalizados**
+
+**Repository básico:**
+```java
+public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
+    // Ya tiene: findAll, findById, save, delete, etc.
+}
+```
+
+**Repository con métodos custom:**
+```java
+public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
+    Optional<Usuario> findByEmail(String email);
+    List<Usuario> findByCondicion(boolean condicion);
+}
+```
+
+**¿Cómo funcionan los métodos custom?**
+- Spring Data JPA **genera automáticamente** la implementación
+- Lee el nombre del método y crea la query SQL
+
+```java
+findByEmail          → SELECT * FROM usuario WHERE email = ?
+findByCondicion      → SELECT * FROM usuario WHERE condicion = ?
+findByUsuarioId      → SELECT * FROM tabla WHERE usuario_id = ?
+findByEstado         → SELECT * FROM tabla WHERE estado = ?
+findByFechaAfter     → SELECT * FROM tabla WHERE fecha > ?
+```
+
+**MascotaRepository:**
+```java
+List<Mascota> findByUsuarioId(Long usuarioId);              // Mascotas de un usuario
+List<Mascota> findByEstado(String estado);                  // Por estado
+List<Mascota> findByUsuarioIdAndEstado(Long id, String e);  // Combinado
+```
+
+**AvistamientoRepository:**
+```java
+List<Avistamiento> findByMascotaId(Long mascotaId);         // De una mascota
+List<Avistamiento> findByUsuarioAvistadorId(Long id);       // De un usuario
+List<Avistamiento> findByFechaAfter(LocalDate fecha);       // Después de fecha
+List<Avistamiento> findByCoordenada_Zona(String zona);      // Por zona (relación)
+```
+
+---
+
+## 7. **Controllers - La capa web**
+
+**AuthController - Autenticación:**
+```java
+@RestController
+@RequestMapping("/api/auth")
+public class AuthController {
+    
+    @PostMapping("/registro")
+    public ResponseEntity<Usuario> registrar(@RequestBody RegistroRequest request) {
+        Usuario usuario = usuarioService.registrar(request);
+        return ResponseEntity.created(...).body(usuario);
+    }
+    
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+        Usuario usuario = usuarioService.login(request);
+        // Convierte Usuario a LoginResponse
+        LoginResponse response = new LoginResponse(...);
+        return ResponseEntity.ok(response);
+    }
+}
+```
+
+**Flujo completo de registro:**
+1. Cliente envía POST a `/api/auth/registro` con JSON
+2. Spring convierte JSON a `RegistroRequest`
+3. Controller llama `usuarioService.registrar(request)`
+4. Service valida y crea el `Usuario`
+5. Controller responde con status 201 Created + el usuario
+
+**MascotaController - CRUD con permisos:**
+```java
+@PostMapping("/usuario/{usuarioId}")
+public ResponseEntity<Mascota> crear(
+        @PathVariable Long usuarioId,
+        @RequestBody Mascota mascota) {
+    Mascota creada = service.crearMascota(usuarioId, mascota);
+    return ResponseEntity.created(...).body(creada);
+}
+
+@PutMapping("/{id}/usuario/{usuarioId}")
+public ResponseEntity<Mascota> editar(
+        @PathVariable Long id,
+        @PathVariable Long usuarioId,
+        @RequestBody Mascota mascota) {
+    try {
+        Mascota actualizada = service.editarMascota(usuarioId, id, mascota);
+        return ResponseEntity.ok(actualizada);
+    } catch (Exception e) {
+        return ResponseEntity.badRequest().build();
+    }
+}
+```
+
+**¿Por qué `usuarioId` en la URL?**
+```
+PUT /api/mascotas/5/usuario/10
+```
+- Mascota ID: 5
+- Usuario ID: 10
+- El service valida que el usuario 10 sea dueño de la mascota 5
+- Si no lo es, lanza excepción y responde 400 Bad Request
+
+---
+
+## 8. **Anotaciones explicadas**
+
+**@RestController:**
+```java
+@RestController = @Controller + @ResponseBody
+```
+- Indica que es un controller REST
+- Todas las respuestas se convierten automáticamente a JSON
+
+**@RequestMapping:**
+```java
+@RequestMapping("/api/usuarios")
+```
+- Define el path base del controller
+- Todos los métodos heredan este prefijo
+
+**@GetMapping, @PostMapping, etc:**
+```java
+@GetMapping("/{id}")          → GET /api/usuarios/5
+@PostMapping                  → POST /api/usuarios
+@PutMapping("/{id}")          → PUT /api/usuarios/5
+@DeleteMapping("/{id}")       → DELETE /api/usuarios/5
+```
+
+**@PathVariable:**
+```java
+public Usuario obtener(@PathVariable Long id)
+```
+- Extrae variables de la URL
+- `/api/usuarios/5` → `id = 5`
+
+**@RequestBody:**
+```java
+public Usuario crear(@RequestBody Usuario usuario)
+```
+- Convierte el JSON del request a objeto Java
+- Cliente envía: `{"nombre": "Juan"}`
+- Spring crea: `Usuario` con nombre="Juan"
+
+**@Service, @Repository:**
+```java
+@Service
+public class UsuarioService { ... }
+
+@Repository
+public interface UsuarioRepository { ... }
+```
+- Marcan las clases como componentes de Spring
+- Spring las instancia automáticamente (Dependency Injection)
+
+---
+
+## 9. **Flujo completo de una request**
+
+**Ejemplo: Crear una mascota**
+
+```
+Cliente                Controller              Service                Repository          DB
+  |                       |                       |                       |                |
+  |--POST /api/mascotas-->|                       |                       |                |
+  |   + JSON              |                       |                       |                |
+  |                       |--crear(mascota)------>|                       |                |
+  |                       |                       |--validar usuario----->|                |
+  |                       |                       |                       |--SELECT------->|
+  |                       |                       |<------Usuario---------|<---result------|
+  |                       |                       |                       |                |
+  |                       |                       |--save(mascota)------->|                |
+  |                       |                       |                       |--INSERT------->|
+  |                       |<-----Mascota creada---|<------Mascota---------|<---id----------|
+  |<--201 Created + JSON--|                       |                       |                |
+```
+
+---
+
+## 10. **Ventajas de esta arquitectura**
+
+**Sin GenericService:**
+```java
+// UsuarioService
+public List<Usuario> listar() { return repo.findAll(); }
+public Optional<Usuario> obtener(Long id) { return repo.findById(id); }
+public Usuario crear(Usuario u) { return repo.save(u); }
+// ... etc
+
+// MascotaService - MISMO CÓDIGO REPETIDO
+public List<Mascota> listar() { return repo.findAll(); }
+public Optional<Mascota> obtener(Long id) { return repo.findById(id); }
+public Mascota crear(Mascota m) { return repo.save(m); }
+// ... etc
+
+// AvistamientoService - MISMO CÓDIGO REPETIDO OTRA VEZ
+public List<Avistamiento> listar() { return repo.findAll(); }
+// ... etc
+```
+
+**Con GenericService:**
+```java
+// UsuarioService
+public class UsuarioService extends GenericService<Usuario, Long> {
+    // ✅ listar(), obtener(), crear() ya heredados
+    
+    // Solo métodos específicos:
+    public Usuario registrar(...) { }
+    public Usuario login(...) { }
+}
+
+// MascotaService
+public class MascotaService extends GenericService<Mascota, Long> {
+    // ✅ listar(), obtener(), crear() ya heredados
+    
+    // Solo métodos específicos:
+    public List<Mascota> listarPerdidas() { }
+}
+```
+
+**Resultado:**
+- ❌ Sin genéricos: ~300 líneas de código repetido
+- ✅ Con genéricos: ~50 líneas (85% menos código)
+- ✅ Mantenimiento: cambias algo en un solo lugar
+- ✅ Testing: pruebas el GenericService una vez
+
+---

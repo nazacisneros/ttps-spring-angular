@@ -9,15 +9,18 @@ import java.util.List;
 public class Mascota {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected Long id;
+    protected Long mascota_id;
     private String nombre;
     private String tamanio;
     private String color;
     private String descripcion;
+    private String estado;
     @Transient
     private List<Byte[]> fotos;
     @OneToMany(mappedBy = "mascota", cascade = CascadeType.ALL)
     private List<Avistamiento> avistamientos;
+    @OneToOne
+    private Usuario usuario;
 
     public Mascota() {}
 
@@ -31,7 +34,7 @@ public class Mascota {
     }
 
     public Long getId() {
-        return this.id;
+        return this.mascota_id;
     }
 
     public String getNombre() {
@@ -89,4 +92,14 @@ public class Mascota {
     public void eliminarAvistamiento(Long id_avistamiento) {
         this.avistamientos.remove(id_avistamiento);
     }
+
+    public void setUsuario(Usuario usuario) {this.usuario=usuario;}
+
+    public Usuario getUsuario() {return this.usuario;}
+
+    public void setEstado(String estado) {this.estado=estado;}
+
+    public String getEstado() {return this.estado;}
+
+
 }

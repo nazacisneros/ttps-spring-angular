@@ -1,23 +1,12 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package ttps.spring.repository;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.jpa.repository.JpaRepository;
 import ttps.spring.entity.Coordenada;
 
-@Repository
-@Transactional
-public class CoordenadaRepository {
-
-    @PersistenceContext
-    private EntityManager em;
-
-    public void guardar(Coordenada coordenada) {
-        em.persist(coordenada);
-    }
-
-    public Coordenada buscarPorId(Long id) {
-        return em.find(Coordenada.class, id);
-    }
+public interface CoordenadaRepository extends JpaRepository<Coordenada, Long> {
 }

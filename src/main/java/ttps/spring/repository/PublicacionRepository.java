@@ -1,41 +1,17 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package ttps.spring.repository;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.jpa.repository.JpaRepository;
 import ttps.spring.entity.Publicacion;
-
+import java.time.LocalDate;
 import java.util.List;
 
-@Repository
-@Transactional
-public class PublicacionRepository {
-
-    @PersistenceContext
-    private EntityManager em;
-
-    public void guardar(Publicacion publicacion) {
-        em.persist(publicacion);
-    }
-
-    public Publicacion buscarPorId(Long id) {
-        return em.find(Publicacion.class, id);
-    }
-
-    public List<Publicacion> listar() {
-        return em.createQuery("SELECT p FROM Publicacion p", Publicacion.class).getResultList();
-    }
-
-    public void eliminar(Long id) {
-        Publicacion p = em.find(Publicacion.class, id);
-        if (p != null) {
-            em.remove(p);
-        }
-    }
-
-    public void actualizar(Publicacion publicacion) {
-        em.merge(publicacion);
-    }
+public interface PublicacionRepository extends JpaRepository<Publicacion, Long> {
+    List<Publicacion> findByUsuarioPublicadorId(Long usuarioId);
+    List<Publicacion> findByEstado(String estado);
+    List<Publicacion> findByFechaAfter(LocalDate fecha);
 }
-

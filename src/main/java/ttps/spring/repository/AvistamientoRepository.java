@@ -1,36 +1,19 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package ttps.spring.repository;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import ttps.spring.entity.Avistamiento;
-
 import java.util.List;
+import java.time.LocalDate;
 
-@Repository
-@Transactional
-public class AvistamientoRepository {
-
-    @PersistenceContext
-    private EntityManager em;
-
-    public void guardar(Avistamiento avistamiento) {
-        em.persist(avistamiento);
-    }
-
-    public List<Avistamiento> listar() {
-        return em.createQuery("FROM Avistamiento", Avistamiento.class).getResultList();
-    }
-
-    public Avistamiento buscarPorId(Long id) {
-        return em.find(Avistamiento.class, id);
-    }
-
-    public void eliminar(Long id) {
-        Avistamiento a = buscarPorId(id);
-        if (a != null) {
-            em.remove(a);
-        }
-    }
+public interface AvistamientoRepository extends JpaRepository<Avistamiento, Long> {
+    List<Avistamiento> findByMascotaId(Long mascotaId);
+    List<Avistamiento> findByUsuarioAvistadorId(Long usuarioId);
+    List<Avistamiento> findByFechaAfter(LocalDate fecha);
+    //List<Avistamiento> findByCoordenada_Zona();
+    List<Avistamiento> findByMascotaIdOrderByFechaDesc(Long mascotaId);
 }

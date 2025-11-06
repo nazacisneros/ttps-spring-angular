@@ -16,7 +16,7 @@ public class Publicacion extends Registro {
     private Mascota mascota;
     @ManyToOne
     @JoinColumn(name = "usuario_id")
-    private Usuario usuario_publicador;
+    private Usuario usuarioPublicador;
 
     public Publicacion() {}
 
@@ -24,7 +24,7 @@ public class Publicacion extends Registro {
         super(fecha, hora, coordenada);
         this.estado = estado;
         this.mascota = mascota;
-        this.usuario_publicador = usuario;
+        this.usuarioPublicador = usuario;
     }
 
     public Long getId() {
@@ -44,11 +44,11 @@ public class Publicacion extends Registro {
     }
 
     public Usuario getUsuario_publicador() {
-        return usuario_publicador;
+        return usuarioPublicador;
     }
 
-    public void setUsuario_publicador(Usuario usuario_publicador) {
-        this.usuario_publicador = usuario_publicador;
+    public void setUsuario_publicador(Usuario usuarioPublicador) {
+        this.usuarioPublicador = usuarioPublicador;
     }
 
     public Mascota getMascota() {

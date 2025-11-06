@@ -1,38 +1,17 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package ttps.spring.repository;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.jpa.repository.JpaRepository;
 import ttps.spring.entity.Usuario;
 
 import java.util.List;
+import java.util.Optional;
 
-@Repository
-@Transactional
-public class UsuarioRepository {
-
-    @PersistenceContext
-    private EntityManager em;
-
-    public void guardar(Usuario usuario) {
-        em.persist(usuario);
-    }
-
-    public void actualizar(Usuario usuario) {
-        em.merge(usuario);
-    }
-
-    public void eliminar(Long id) {
-        Usuario usuario = em.find(Usuario.class, id);
-        if (usuario != null) em.remove(usuario);
-    }
-
-    public Usuario buscarPorId(Long id) {
-        return em.find(Usuario.class, id);
-    }
-
-    public List<Usuario> listar() {
-        return em.createQuery("FROM Usuario", Usuario.class).getResultList();
-    }
+public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
+    Optional<Usuario> findByEmail(String email);
+    List<Usuario> findByCondicion(boolean condicion);
 }
