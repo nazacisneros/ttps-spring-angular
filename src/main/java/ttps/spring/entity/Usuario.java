@@ -33,10 +33,11 @@ public class Usuario {
     @OneToMany(mappedBy = "mascota_id", cascade = CascadeType.ALL)
     protected List<Mascota> mascotas;
 
-    //este constructor vacio es requerido por JPA
-    public Usuario() {}
+    public Usuario() {
+    }
 
-    public Usuario(String nombre, String apellido, String email, String telefono, String contrasenia, boolean condicion, boolean esAdmin, Barrio barrio, Ranking ranking) {
+    public Usuario(String nombre, String apellido, String email, String telefono, String contrasenia, boolean condicion,
+            boolean esAdmin, Barrio barrio, Ranking ranking) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.email = email;
@@ -50,8 +51,8 @@ public class Usuario {
         this.puntajes = new ArrayList<>();
     }
 
-
-    public void darDeBaja() {}
+    public void darDeBaja() {
+    }
 
     public void agregarPuntos(Ranking ranking, int puntos) {
         Puntaje puntajeExistente = puntajes.stream()
@@ -60,14 +61,15 @@ public class Usuario {
                 .orElse(null);
 
         if (puntajeExistente == null) {
-            Puntaje nuevo = new Puntaje(puntos, ranking,this);
+            Puntaje nuevo = new Puntaje(puntos, ranking, this);
             puntajes.add(nuevo);
         } else {
             puntajeExistente.incrementarPuntos(puntos);
         }
     }
 
-    public void registrarPublicacion(Mascota mascota, String estado, LocalDate fecha, LocalDateTime hora, Coordenada coordenada) {
+    public void registrarPublicacion(Mascota mascota, String estado, LocalDate fecha, LocalDateTime hora,
+            Coordenada coordenada) {
         this.publicaciones.add(new Publicacion(fecha, hora, coordenada, estado, mascota, this));
     }
 
@@ -100,7 +102,7 @@ public class Usuario {
         this.publicaciones.removeIf(p -> id == p.getId());
     }
 
-    public void deshabilitarCuenta(){
+    public void deshabilitarCuenta() {
         this.condicion = false;
     }
 
@@ -200,7 +202,11 @@ public class Usuario {
         this.publicaciones = publicaciones;
     }
 
-    public void setMascotas(List<Mascota> mascotas) {this.mascotas = mascotas;}
+    public void setMascotas(List<Mascota> mascotas) {
+        this.mascotas = mascotas;
+    }
 
-    public List<Mascota> getMascotas() {return mascotas;}
+    public List<Mascota> getMascotas() {
+        return mascotas;
+    }
 }

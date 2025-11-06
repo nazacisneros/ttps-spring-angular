@@ -55,12 +55,10 @@ public class MascotaService extends GenericService<Mascota, Long> {
         Mascota mascota = obtener(mascotaId)
                 .orElseThrow(() -> new EntityNotFoundException("Mascota no encontrado"));
 
-        // Verificar que la mascota pertenezca al usuario
         if (!mascota.getUsuario().getId().equals(usuarioId)) {
             throw new IllegalArgumentException("No tienes permiso para editar esta mascota");
         }
 
-        // Actualizar campos
         if (datosActualizados.getNombre() != null) {
             mascota.setNombre(datosActualizados.getNombre());
         }
@@ -77,7 +75,6 @@ public class MascotaService extends GenericService<Mascota, Long> {
         return repository.save(mascota);
     }
 
-    //si pertenece a un usuario
     public void eliminarMascota(Long usuarioId, Long mascotaId) {
         Mascota mascota = obtener(mascotaId)
                 .orElseThrow(() -> new EntityNotFoundException("Mascota no encontrado"));

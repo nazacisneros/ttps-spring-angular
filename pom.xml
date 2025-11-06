@@ -62,7 +62,7 @@
             <version>${spring.version}</version>
         </dependency>
 
-        <!-- Spring Data JPA - VERSIÓN ACTUALIZADA -->
+        <!-- Spring Data JPA -->
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
@@ -90,7 +90,7 @@
             <version>2.15.2</version>
         </dependency>
 
-        <!-- Servlet API - UNA SOLA VEZ -->
+        <!-- Servlet API -->
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>

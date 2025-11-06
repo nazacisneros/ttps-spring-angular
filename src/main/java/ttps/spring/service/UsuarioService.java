@@ -1,7 +1,7 @@
 package ttps.spring.service;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-//import org.springframework.security.crypto.password.PasswordEncoder;
+//import org.springframework.security.crypto.password.PasswordEncoder; para el hash
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ttps.spring.entity.Usuario;
@@ -32,7 +32,6 @@ public class UsuarioService extends GenericService<Usuario, Long> {
     }
 
     public Usuario registrar(RegistroRequest request) {
-        // Validar que el email no exista
         if (repository.findByEmail(request.getEmail()).isPresent()) {
             throw new IllegalArgumentException("El email ya está registrado");
         }
@@ -42,8 +41,9 @@ public class UsuarioService extends GenericService<Usuario, Long> {
         usuario.setApellido(request.getApellido());
         usuario.setEmail(request.getEmail());
         usuario.setTelefono(request.getTelefono());
-        // usuario.setContrasenia(passwordEncoder.encode(request.getContrasenia())); // Con seguridad
-        usuario.setContrasenia(request.getContrasenia()); // Sin seguridad (temporal)
+        // usuario.setContrasenia(passwordEncoder.encode(request.getContrasenia())); //
+        // Hasheando
+        usuario.setContrasenia(request.getContrasenia()); // Sin hash
         usuario.setCondicion(true);
         usuario.setEsAdmin(false);
 
@@ -61,8 +61,9 @@ public class UsuarioService extends GenericService<Usuario, Long> {
         }
 
         // Con seguridad:
-        // if (!passwordEncoder.matches(request.getContrasenia(), usuario.getContrasenia())) {
-        //     throw new IllegalArgumentException("Email o contraseña incorrectos");
+        // if (!passwordEncoder.matches(request.getContrasenia(),
+        // usuario.getContrasenia())) {
+        // throw new IllegalArgumentException("Email o contraseña incorrectos");
         // }
 
         if (!usuario.isCondicion()) {
