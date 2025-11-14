@@ -52,11 +52,14 @@ public class UsuarioService extends GenericService<Usuario, Long> {
 
     @Transactional(readOnly = true)
     public Usuario login(LoginRequest request) {
+        System.out.println("REQUEST EMAIL: " + request.getEmail());
+        System.out.println("REQUEST PASS: " + request.getContrasenia());
         Usuario usuario = repository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new EntityNotFoundException("Email o contraseña incorrectos"));
 
         // Sin seguridad (temporal)
-        if (!usuario.getContrasenia().equals(request.getContrasenia())) {
+        if (usuario.getContrasenia() == null ||
+                !usuario.getContrasenia().equals(request.getContrasenia())) {
             throw new IllegalArgumentException("Email o contraseña incorrectos");
         }
 
