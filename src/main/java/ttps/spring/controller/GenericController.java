@@ -24,7 +24,7 @@ public abstract class GenericController<T, ID> {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping(consumes = "application/json")
     public ResponseEntity<T> crear(@RequestBody T entidad) {
         T creado = getService().crear(entidad);
         return ResponseEntity.created(URI.create(getBasePath() + "/" + getId(creado))).body(creado);

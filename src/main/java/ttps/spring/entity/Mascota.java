@@ -31,6 +31,7 @@ public class Mascota {
         this.descripcion = descripcion;
         this.fotos = new ArrayList<>();
         this.avistamientos = new ArrayList<>();
+        this.estado = estado;
     }
 
     public Long getId() {

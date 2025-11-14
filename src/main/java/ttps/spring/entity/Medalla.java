@@ -18,10 +18,6 @@ public class Medalla {
         this.nombre = nombre;
     }
 
-    public Long getID() {
-        return this.id;
-    }
-
     public String getNombre() {
         return nombre;
     }

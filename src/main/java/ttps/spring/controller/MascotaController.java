@@ -56,7 +56,7 @@ public class MascotaController extends GenericController<Mascota, Long> {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/usuario/{usuarioId}")
+    @PostMapping(value = "/usuario/{usuarioId}", consumes = "application/json")
     public ResponseEntity<Mascota> crear(@PathVariable Long usuarioId, @RequestBody Mascota mascota) {
         Mascota creada = service.crearMascota(usuarioId, mascota);
         return ResponseEntity.created(URI.create("/api/mascotas/" + creada.getId())).body(creada);
