@@ -1,0 +1,25 @@
+<h2>{{ editMode ? 'Editar datos personales' : 'Registro de usuario' }}</h2>
+
+<form [formGroup]="registerForm" (ngSubmit)="submit()">
+
+  <input formControlName="nombre" placeholder="Nombre">
+  <input formControlName="apellido" placeholder="Apellido">
+  <input formControlName="email" placeholder="Correo electrónico">
+
+  <input
+    *ngIf="!editMode"
+    type="password"
+    formControlName="password"
+    placeholder="Contraseña"
+  >
+
+  <input formControlName="telefono" placeholder="Teléfono">
+  <input formControlName="barrio" placeholder="Barrio">
+  <input formControlName="ciudad" placeholder="Ciudad">
+  <input formControlName="cbu" placeholder="CBU">
+
+  <button type="submit">
+    {{ editMode ? 'Guardar cambios' : 'Registrarse' }}
+  </button>
+
+</form>
