@@ -8,12 +8,13 @@ public class LoginResponse {
     private boolean esAdmin;
     private String token;
 
-    public LoginResponse(Long id, String nombre, String apellido, String email, boolean esAdmin) {
+    public LoginResponse(Long id, String nombre, String apellido, String email, boolean esAdmin, String token) {
         this.id = id;
         this.nombre = nombre;
         this.apellido = apellido;
         this.email = email;
         this.esAdmin = esAdmin;
+        this.token = token;
     }
 
     // Getters y setters

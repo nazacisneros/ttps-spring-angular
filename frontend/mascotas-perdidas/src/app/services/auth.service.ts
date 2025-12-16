@@ -9,7 +9,6 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   register(data: any) {
-    // El backend espera `contrasenia` en lugar de `password`.
     const payload = { ...data } as any;
     if (payload.password) {
       payload.contrasenia = payload.password;
@@ -29,6 +28,10 @@ export class AuthService {
       return this.http.put(`/api/usuarios/${id}/perfil`, data);
     }
     return this.http.put(`${this.api}/me`, data);
+  }
+
+  login(data: any) {
+    return this.http.post(`${this.api}/login`, data);
   }
 }
 

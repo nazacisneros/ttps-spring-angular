@@ -27,7 +27,7 @@ export class RegistroComponent implements OnInit {
       nombre: ['', Validators.required],
       apellido: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      password: [''], // NO requerida en edición
+      password: [''],
       telefono: ['', Validators.required],
       barrio: ['', Validators.required],
       ciudad: ['', Validators.required],
@@ -61,7 +61,6 @@ export class RegistroComponent implements OnInit {
     if (this.registerForm.invalid) return;
 
     if (this.editMode) {
-      // En edición, enviar solo los campos editables que el backend espera
       const payload: any = {
         nombre: this.registerForm.value.nombre,
         apellido: this.registerForm.value.apellido,
@@ -71,8 +70,6 @@ export class RegistroComponent implements OnInit {
       this.authService.updateProfile(payload, this.userId ?? undefined)
         .subscribe(() => console.log('Perfil actualizado'));
     } else {
-      // Registro: mapear `password` -> `contrasenia` (AuthService ya lo hace),
-      // enviar solo campos que el backend `RegistroRequest` espera.
       const payload: any = {
         nombre: this.registerForm.value.nombre,
         apellido: this.registerForm.value.apellido,

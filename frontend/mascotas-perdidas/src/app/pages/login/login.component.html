@@ -1,1 +1,26 @@
-<p>login works!</p>
+<h2>Iniciar sesión</h2>
+
+<form [formGroup]="loginForm" (ngSubmit)="submit()">
+
+  <input
+    formControlName="email"
+    placeholder="Correo electrónico"
+    type="email"
+  >
+
+  <input
+    formControlName="contrasenia"
+    placeholder="Contraseña"
+    type="password"
+  >
+
+  <button type="submit" [disabled]="loginForm.invalid">
+    Ingresar
+  </button>
+
+</form>
+
+<p>
+  ¿No tenés cuenta?
+  <a routerLink="/registro">Registrarse</a>
+</p>

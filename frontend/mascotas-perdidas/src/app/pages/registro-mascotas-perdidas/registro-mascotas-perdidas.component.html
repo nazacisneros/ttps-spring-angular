@@ -1,0 +1,36 @@
+<h2>Registro de Mascota</h2>
+
+<form [formGroup]="mascotaForm" (ngSubmit)="submit()">
+
+  <input
+    type="text"
+    placeholder="Nombre"
+    formControlName="nombre"
+  >
+
+  <select formControlName="tamanio">
+    <option value="">Seleccione tamaño</option>
+    <option *ngFor="let t of tamanios" [value]="t">{{ t }}</option>
+  </select>
+
+  <input
+    type="text"
+    placeholder="Color"
+    formControlName="color"
+  >
+
+  <textarea
+    placeholder="Descripción"
+    formControlName="descripcion">
+  </textarea>
+
+  <select formControlName="estado">
+    <option value="">Seleccione estado</option>
+    <option *ngFor="let e of estados" [value]="e">{{ e }}</option>
+  </select>
+
+  <button type="submit" [disabled]="mascotaForm.invalid">
+    Registrar Mascota
+  </button>
+
+</form>

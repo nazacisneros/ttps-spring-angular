@@ -1,7 +1,7 @@
 package ttps.spring.service;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-//import org.springframework.security.crypto.password.PasswordEncoder; para el hash
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ttps.spring.entity.Usuario;
@@ -16,9 +16,11 @@ import java.util.Optional;
 public class UsuarioService extends GenericService<Usuario, Long> {
 
     private final UsuarioRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository repository) {
+    public UsuarioService(UsuarioRepository repository, PasswordEncoder passwordEncoder) {
         this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -32,6 +34,7 @@ public class UsuarioService extends GenericService<Usuario, Long> {
     }
 
     public Usuario registrar(RegistroRequest request) {
+
         if (repository.findByEmail(request.getEmail()).isPresent()) {
             throw new IllegalArgumentException("El email ya está registrado");
         }
@@ -41,9 +44,8 @@ public class UsuarioService extends GenericService<Usuario, Long> {
         usuario.setApellido(request.getApellido());
         usuario.setEmail(request.getEmail());
         usuario.setTelefono(request.getTelefono());
-        // usuario.setContrasenia(passwordEncoder.encode(request.getContrasenia())); //
-        // Hasheando
-        usuario.setContrasenia(request.getContrasenia()); // Sin hash
+        usuario.setContrasenia(
+                passwordEncoder.encode(request.getContrasenia()));
         usuario.setCondicion(true);
         usuario.setEsAdmin(false);
 
@@ -57,17 +59,11 @@ public class UsuarioService extends GenericService<Usuario, Long> {
         Usuario usuario = repository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new EntityNotFoundException("Email o contraseña incorrectos"));
 
-        // Sin seguridad (temporal)
-        if (usuario.getContrasenia() == null ||
-                !usuario.getContrasenia().equals(request.getContrasenia())) {
+        if (!passwordEncoder.matches(
+                request.getContrasenia(),
+                usuario.getContrasenia())) {
             throw new IllegalArgumentException("Email o contraseña incorrectos");
         }
-
-        // Con seguridad:
-        // if (!passwordEncoder.matches(request.getContrasenia(),
-        // usuario.getContrasenia())) {
-        // throw new IllegalArgumentException("Email o contraseña incorrectos");
-        // }
 
         if (!usuario.isCondicion()) {
             throw new IllegalStateException("Usuario deshabilitado");
@@ -115,5 +111,10 @@ public class UsuarioService extends GenericService<Usuario, Long> {
 
         usuario.habilitarCuenta();
         repository.save(usuario);
+    }
+
+    public Usuario findByEmail(String email) {
+        return repository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
     }
 }
