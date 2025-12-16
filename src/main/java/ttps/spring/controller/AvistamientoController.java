@@ -1,8 +1,12 @@
 package ttps.spring.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ttps.spring.entity.Avistamiento;
+import ttps.spring.exception.avistamiento.AvistamientoNoEncontradoException;
+import ttps.spring.exception.avistamiento.AvistamientoValidationException;
+import ttps.spring.model.ErrorResponse;
 import ttps.spring.service.GenericService;
 import ttps.spring.service.AvistamientoService;
 
@@ -50,11 +54,11 @@ public class AvistamientoController extends GenericController<Avistamiento, Long
     }
 
     /*
-    @GetMapping("/zona/{zona}")
-    public List<Avistamiento> listarPorZona() { //para desarrollar
-        return service.listarPorZona();
-    }
-
+     * @GetMapping("/zona/{zona}")
+     * public List<Avistamiento> listarPorZona() { //para desarrollar
+     * return service.listarPorZona();
+     * }
+     * 
      */
 
     @PostMapping("/usuario/{usuarioId}/mascota/{mascotaId}")
@@ -71,5 +75,24 @@ public class AvistamientoController extends GenericController<Avistamiento, Long
         return service.obtener(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    // Exception Handlers
+    @ExceptionHandler(AvistamientoNoEncontradoException.class)
+    public ResponseEntity<ErrorResponse> handleAvistamientoNoEncontrado(AvistamientoNoEncontradoException e) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                e.getMessage(),
+                System.currentTimeMillis());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    @ExceptionHandler(AvistamientoValidationException.class)
+    public ResponseEntity<ErrorResponse> handleAvistamientoValidation(AvistamientoValidationException e) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                e.getMessage(),
+                System.currentTimeMillis());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 }

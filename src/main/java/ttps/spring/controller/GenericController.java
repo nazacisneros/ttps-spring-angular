@@ -1,7 +1,10 @@
 package ttps.spring.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ttps.spring.exception.EntityNotFoundException;
+import ttps.spring.model.ErrorResponse;
 import ttps.spring.service.GenericService;
 
 import java.net.URI;
@@ -10,6 +13,7 @@ import java.util.List;
 public abstract class GenericController<T, ID> {
 
     protected abstract GenericService<T, ID> getService();
+
     protected abstract String getBasePath();
 
     @GetMapping
@@ -32,23 +36,25 @@ public abstract class GenericController<T, ID> {
 
     @PutMapping("/{id}")
     public ResponseEntity<T> actualizar(@PathVariable ID id, @RequestBody T entidad) {
-        try {
-            T actualizado = getService().actualizar(id, entidad);
-            return ResponseEntity.ok(actualizado);
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
+        T actualizado = getService().actualizar(id, entidad);
+        return ResponseEntity.ok(actualizado);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable ID id) {
-        try {
-            getService().eliminar(id);
-            return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
+        getService().eliminar(id);
+        return ResponseEntity.noContent().build();
     }
 
     protected abstract ID getId(T entidad);
+
+    // Generic Exception Handler
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleEntityNotFound(EntityNotFoundException e) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                e.getMessage(),
+                System.currentTimeMillis());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
 }

@@ -1,7 +1,11 @@
 package ttps.spring.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ttps.spring.entity.Ranking;
+import ttps.spring.exception.ranking.RankingNoEncontradoException;
+import ttps.spring.model.ErrorResponse;
 import ttps.spring.service.GenericService;
 import ttps.spring.service.RankingService;
 
@@ -30,4 +34,13 @@ public class RankingController extends GenericController<Ranking, Long> {
         return entidad.getId();
     }
 
+    // Exception Handlers
+    @ExceptionHandler(RankingNoEncontradoException.class)
+    public ResponseEntity<ErrorResponse> handleRankingNoEncontrado(RankingNoEncontradoException e) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                e.getMessage(),
+                System.currentTimeMillis());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
 }

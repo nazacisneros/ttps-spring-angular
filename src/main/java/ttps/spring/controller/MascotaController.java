@@ -1,8 +1,13 @@
 package ttps.spring.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ttps.spring.entity.Mascota;
+import ttps.spring.exception.mascota.MascotaNoEncontradaException;
+import ttps.spring.exception.mascota.MascotaOperationException;
+import ttps.spring.exception.mascota.MascotaValidationException;
+import ttps.spring.model.ErrorResponse;
 import ttps.spring.service.GenericService;
 import ttps.spring.service.MascotaService;
 
@@ -67,41 +72,53 @@ public class MascotaController extends GenericController<Mascota, Long> {
             @PathVariable Long id,
             @PathVariable Long usuarioId,
             @RequestBody Mascota mascota) {
-        try {
-            Mascota actualizada = service.editarMascota(usuarioId, id, mascota);
-            return ResponseEntity.ok(actualizada);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        Mascota actualizada = service.editarMascota(usuarioId, id, mascota);
+        return ResponseEntity.ok(actualizada);
     }
 
     @DeleteMapping("/{id}/usuario/{usuarioId}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id, @PathVariable Long usuarioId) {
-        try {
-            service.eliminarMascota(usuarioId, id);
-            return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        service.eliminarMascota(usuarioId, id);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}/perdida")
     public ResponseEntity<Mascota> marcarPerdida(@PathVariable Long id) {
-        try {
-            Mascota mascota = service.marcarComoPerdida(id);
-            return ResponseEntity.ok(mascota);
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
+        Mascota mascota = service.marcarComoPerdida(id);
+        return ResponseEntity.ok(mascota);
     }
 
     @PutMapping("/{id}/encontrada")
     public ResponseEntity<Mascota> marcarEncontrada(@PathVariable Long id) {
-        try {
-            Mascota mascota = service.marcarComoEncontrada(id);
-            return ResponseEntity.ok(mascota);
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
+        Mascota mascota = service.marcarComoEncontrada(id);
+        return ResponseEntity.ok(mascota);
+    }
+
+    // Exception Handlers
+    @ExceptionHandler(MascotaNoEncontradaException.class)
+    public ResponseEntity<ErrorResponse> handleMascotaNoEncontrada(MascotaNoEncontradaException e) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                e.getMessage(),
+                System.currentTimeMillis());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    @ExceptionHandler(MascotaValidationException.class)
+    public ResponseEntity<ErrorResponse> handleMascotaValidation(MascotaValidationException e) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                e.getMessage(),
+                System.currentTimeMillis());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(MascotaOperationException.class)
+    public ResponseEntity<ErrorResponse> handleMascotaOperation(MascotaOperationException e) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                e.getMessage(),
+                System.currentTimeMillis());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 }
