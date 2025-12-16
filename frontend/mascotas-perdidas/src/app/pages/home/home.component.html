@@ -1,1 +1,21 @@
-<p>home works!</p>
+<div *ngIf="!auth.isLoggedIn()">
+  <h1>Bienvenido</h1>
+  <p>Encontrá mascotas perdidas y ayudá a que vuelvan a casa.</p>
+</div>
+
+<div *ngIf="auth.isLoggedIn()">
+  <h1>Hola {{ auth.getUser()?.nombre }}</h1>
+
+  <p>
+    Disfruta de las funcionalidades y hagamos que las mascotas vuelvan a casa!
+  </p>
+
+  <div class="acciones">
+    <button routerLink="/mis-mascotas">Mascotas propias</button>
+    <button routerLink="/registrar-adopcion">Registrar Adopción</button>
+    <button routerLink="/editar-perfil">Editar Datos personales</button>
+    <button routerLink="/eliminar-cuenta" class="danger">
+      Eliminar cuenta
+    </button>
+  </div>
+</div>

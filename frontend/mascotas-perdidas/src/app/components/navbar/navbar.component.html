@@ -1,7 +1,11 @@
-<nav>
-  <a routerLink="/">Home</a> <!-- icono -->
-  <a routerLink="/index">Ver Mascotas Perdidas</a>
-  <a routerLink="/indexRankings">Ranking</a> 
+<a routerLink="/">Home</a>
+<ng-container *ngIf="auth.user$ | async as user; else loggedOut">
+  <a routerLink="/reportar-avistamiento">Reportar Avistamiento</a>
+  <span>{{ user.nombre }}</span>
+  <button (click)="auth.logout()">Salir</button>
+</ng-container>
+
+<ng-template #loggedOut>
   <a routerLink="/login">Login</a>
   <a routerLink="/registro">Registrarse</a>
-</nav>
+</ng-template>

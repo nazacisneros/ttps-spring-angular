@@ -3,11 +3,12 @@ import { FormBuilder, Validators, ReactiveFormsModule, FormGroup } from '@angula
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 import { ActivatedRoute } from '@angular/router';
+import { Router, RouterModule  } from '@angular/router';
 
 @Component({
   selector: 'app-registro',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './registro.component.html',
   styleUrls: ['./registro.component.css']
 })
@@ -21,7 +22,8 @@ export class RegistroComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {
     this.registerForm = this.fb.group({
       nombre: ['', Validators.required],
@@ -79,7 +81,15 @@ export class RegistroComponent implements OnInit {
       };
 
       this.authService.register(payload)
-        .subscribe(() => console.log('Registro exitoso'));
+      .subscribe({
+        next: () => {
+          console.log('Registro exitoso');
+          this.router.navigate(['/']);
+        },
+        error: () => {
+          alert('Credenciales incorrectas');
+        }
+      });
     }
   }
 
