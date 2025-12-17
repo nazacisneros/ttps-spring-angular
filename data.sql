@@ -8,7 +8,7 @@
 -- ========================================
 -- 1. COORDENADAS (para ciudades y ubicaciones)
 -- ========================================
-INSERT INTO coordenada (latitud, longitud) VALUES 
+INSERT INTO coordenada (latitud, longitud) VALUES
 ('-34.9214', '-57.9544'),  -- La Plata
 ('-34.6037', '-58.3816'),  -- Buenos Aires
 ('-31.4201', '-64.1888'),  -- Córdoba
@@ -18,7 +18,7 @@ INSERT INTO coordenada (latitud, longitud) VALUES
 -- ========================================
 -- 2. CIUDADES
 -- ========================================
-INSERT INTO ciudad (nombre, coordenada_id) VALUES 
+INSERT INTO ciudad (nombre, coordenada_id) VALUES
 ('La Plata', 1),
 ('Buenos Aires', 2),
 ('Córdoba', 3),
@@ -27,7 +27,7 @@ INSERT INTO ciudad (nombre, coordenada_id) VALUES
 -- ========================================
 -- 3. BARRIOS
 -- ========================================
-INSERT INTO barrio (nombre, ciudad_id) VALUES 
+INSERT INTO barrio (nombre, ciudad_id) VALUES
 -- La Plata
 ('Centro', 1),
 ('Tolosa', 1),
@@ -48,7 +48,7 @@ INSERT INTO barrio (nombre, ciudad_id) VALUES
 -- ========================================
 -- 4. RANKINGS (para usuarios)
 -- ========================================
-INSERT INTO ranking (nombre, puntaje) VALUES 
+INSERT INTO ranking (nombre, puntaje) VALUES
 ('Novato', 0),
 ('Colaborador', 50),
 ('Experto', 150),
@@ -58,7 +58,7 @@ INSERT INTO ranking (nombre, puntaje) VALUES
 -- ========================================
 -- 5. MEDALLAS (asociadas a rankings)
 -- ========================================
-INSERT INTO medalla (nombre, descripcion, ranking_id) VALUES 
+INSERT INTO medalla (nombre, descripcion, ranking_id) VALUES
 ('Primera Ayuda', 'Primera mascota ayudada a encontrar', 1),
 ('Buen Samaritano', '5 mascotas ayudadas', 2),
 ('Guardián de Mascotas', '10 mascotas ayudadas', 3),
@@ -69,7 +69,7 @@ INSERT INTO medalla (nombre, descripcion, ranking_id) VALUES
 -- 6. USUARIOS
 -- ========================================
 -- Nota: Las contraseñas deberían estar hasheadas en producción
-INSERT INTO usuario (nombre, apellido, email, telefono, contrasenia, condicion, es_admin, barrio_id, ranking_id) VALUES 
+INSERT INTO usuario (nombre, apellido, email, telefono, contrasenia, condicion, es_admin, barrio_id, ranking_id) VALUES
 -- Administrador
 ('Admin', 'Sistema', 'admin@ttps.com', '221-000-0000', 'admin123', true, true, 1, 5),
 
@@ -87,7 +87,7 @@ INSERT INTO usuario (nombre, apellido, email, telefono, contrasenia, condicion, 
 -- ========================================
 -- 7. MASCOTAS
 -- ========================================
-INSERT INTO mascota (nombre, tamanio, color, descripcion, estado, usuario_mascota_id) VALUES 
+INSERT INTO mascota (nombre, tamanio, color, descripcion, estado, usuario_mascota_id) VALUES
 -- Mascotas perdidas
 ('Firulais', 'Mediano', 'Marrón', 'Perro mestizo, muy amigable, collar rojo', 'Perdido', 2),
 ('Luna', 'Pequeño', 'Blanco', 'Gata persa, ojos azules, muy asustadiza', 'Perdido', 3),
@@ -107,7 +107,7 @@ INSERT INTO mascota (nombre, tamanio, color, descripcion, estado, usuario_mascot
 -- ========================================
 -- 8. PUBLICACIONES (de mascotas perdidas/encontradas)
 -- ========================================
-INSERT INTO publicacion (fecha, hora, estado, coordenada_id, mascota_id, usuario_id) VALUES 
+INSERT INTO publicacion (fecha, hora, estado, coordenada_id, mascota_id, usuario_id) VALUES
 ('2024-01-15', '2024-01-15 10:30:00', 'Perdido', 1, 1, 2),
 ('2024-01-20', '2024-01-20 14:45:00', 'Perdido', 2, 2, 3),
 ('2024-02-01', '2024-02-01 09:15:00', 'Perdido', 3, 3, 4),
@@ -119,7 +119,7 @@ INSERT INTO publicacion (fecha, hora, estado, coordenada_id, mascota_id, usuario
 -- ========================================
 -- 9. AVISTAMIENTOS (reportes de usuarios que vieron mascotas)
 -- ========================================
-INSERT INTO avistamiento (fecha, hora, comentario, coordenada_id, mascota_id, usuario_id) VALUES 
+INSERT INTO avistamiento (fecha, hora, comentario, coordenada_id, mascota_id, usuario_id) VALUES
 -- Avistamientos de Firulais
 ('2024-01-16', '2024-01-16 08:00:00', 'Vi un perro similar cerca de la plaza', 5, 1, 3),
 ('2024-01-17', '2024-01-17 15:30:00', 'Creo haberlo visto en el parque', 5, 1, 4),
@@ -141,7 +141,7 @@ INSERT INTO avistamiento (fecha, hora, comentario, coordenada_id, mascota_id, us
 -- ========================================
 -- 10. PUNTAJES (puntos de usuarios por ayudar)
 -- ========================================
-INSERT INTO puntaje (puntos, ranking_id, usuario_puntaje_id) VALUES 
+INSERT INTO puntaje (puntos, ranking_id, usuario_puntaje_id) VALUES
 -- Usuario 2 (Juan) - 50 puntos
 (50, 2, 2),
 -- Usuario 3 (María) - 150 puntos
