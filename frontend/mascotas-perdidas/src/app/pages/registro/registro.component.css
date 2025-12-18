@@ -1,20 +1,446 @@
-.error {
-  color: #dc3545;
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
-  margin-bottom: 1rem;
+/* Contenedor principal del registro */
+:host {
+  display: block;
+  padding: 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  animation: fadeIn 0.6s ease-in;
 }
 
-.server-error {
-  background-color: #f8d7da;
-  color: #721c24;
-  padding: 0.75rem;
-  border-radius: 0.25rem;
-  margin-bottom: 1rem;
-  border: 1px solid #f5c6cb;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
+/* Contenedor del registro */
+.registro-container {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 2rem 3rem;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 1400px;
+  animation: slideUp 0.6s ease-out;
+  position: relative;
+  overflow: visible;
+  margin: 0 auto 2rem auto;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Título principal */
+h2 {
+  text-align: center;
+  color: #667eea;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 1rem 0;
+  position: relative;
+  z-index: 1;
+  animation: slideDown 0.6s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Icono decorativo en el título */
+h2::before {
+  content: '📝';
+  display: inline-block;
+  font-size: 2rem;
+  margin-right: 0.5rem;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Formulario */
+form {
+  position: relative;
+  z-index: 1;
+}
+
+/* Secciones del formulario */
+.form-section {
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 12px;
+  border-left: 4px solid #667eea;
+  animation: fadeInSection 0.6s ease-out;
+}
+
+@keyframes fadeInSection {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Títulos de sección */
+h3 {
+  color: #667eea;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+h3::before {
+  content: '👤';
+  font-size: 1.5rem;
+}
+
+.form-section:nth-child(2) h3::before {
+  content: '📍';
+}
+
+/* Grupo de formulario */
+.form-group {
+  margin-bottom: 0.5rem;
+}
+
+/* Fila de formulario (para campos en línea) */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+/* Labels */
+label {
+  display: block;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  transition: color 0.3s ease;
+}
+
+.form-group:focus-within label {
+  color: #667eea;
+}
+
+/* Inputs y selects */
+input,
+select {
+  width: 100%;
+  padding: 0.6rem 0.9rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  background: #ffffff;
+  color: #333;
+  font-family: inherit;
+}
+
+input::placeholder {
+  color: #999;
+  font-weight: 400;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  transform: translateY(-2px);
+}
+
+input:hover,
+select:hover {
+  border-color: #764ba2;
+}
+
+/* Select específico */
+select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23667eea' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+  appearance: none;
+}
+
+/* Inputs con error */
 input.ng-invalid.ng-touched,
 select.ng-invalid.ng-touched {
   border-color: #dc3545;
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-10px);
+  }
+  75% {
+    transform: translateX(10px);
+  }
+}
+
+input.ng-invalid.ng-touched:focus,
+select.ng-invalid.ng-touched:focus {
+  box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.1);
+}
+
+/* Mensajes de error de campos */
+.error {
+  color: #dc3545;
+  font-size: 0.8rem;
+  margin-top: 0.3rem;
+  padding: 0.4rem 0.8rem;
+  background: rgba(220, 53, 69, 0.1);
+  border-left: 3px solid #dc3545;
+  border-radius: 6px;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.error::before {
+  content: '⚠️ ';
+  margin-right: 0.25rem;
+}
+
+/* Error del servidor */
+.server-error {
+  background: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  border-left: 4px solid #dc3545;
+  font-weight: 500;
+  font-size: 0.9rem;
+  animation: slideDown 0.3s ease-out;
+  position: relative;
+  z-index: 1;
+}
+
+.server-error::before {
+  content: '❌ ';
+  margin-right: 0.5rem;
+  font-size: 1.2rem;
+}
+
+/* Botón de submit */
+button[type="submit"] {
+  width: 100%;
+  padding: 0.85rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 0.5rem;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+button[type="submit"]::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+button[type="submit"]:hover::before {
+  width: 400px;
+  height: 400px;
+}
+
+button[type="submit"]:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+}
+
+button[type="submit"]:active {
+  transform: translateY(-1px);
+}
+
+button[type="submit"]:disabled {
+  background: linear-gradient(135deg, #cccccc 0%, #999999 100%);
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+button[type="submit"]:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+button[type="submit"]:disabled::before {
+  display: none;
+}
+
+/* Link de login */
+.login-link {
+  text-align: center;
+  margin-top: 0.75rem;
+  color: #666;
+  font-size: 0.95rem;
+  font-weight: 500;
+  animation: fadeIn 0.8s ease-in 0.4s backwards;
+  position: relative;
+  z-index: 1;
+}
+
+.login-link a {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 700;
+  padding: 0.3rem 0.8rem;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  display: inline-block;
+  margin-left: 0.5rem;
+}
+
+.login-link a:hover {
+  background: rgba(102, 126, 234, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+/* Diseño responsive para tablets */
+@media (max-width: 768px) {
+  :host {
+    padding: 2rem 1rem;
+  }
+
+  .registro-container {
+    padding: 2rem;
+  }
+
+  h2 {
+    font-size: 1.75rem;
+  }
+
+  h2::before {
+    font-size: 2.5rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .form-section {
+    padding: 1rem;
+  }
+
+  h3 {
+    font-size: 1.2rem;
+  }
+}
+
+/* Diseño responsive para móviles */
+@media (max-width: 480px) {
+  :host {
+    padding: 1.5rem 1rem;
+  }
+
+  .registro-container {
+    padding: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  h2::before {
+    font-size: 2rem;
+  }
+
+  .form-section {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+
+  input,
+  select {
+    padding: 0.875rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  button[type="submit"] {
+    padding: 1rem;
+    font-size: 1rem;
+  }
+
+  .login-link {
+    font-size: 0.9rem;
+  }
+}
+
+/* Animación de inputs válidos */
+input.ng-valid.ng-touched:not([value=""]),
+select.ng-valid.ng-touched:not([value=""]) {
+  border-color: #28a745;
 }

@@ -8,6 +8,4 @@
 /* El contenido del router debe crecer para empujar el footer hacia abajo */
 router-outlet + * {
   flex: 1 0 auto;
-  display: flex;
-  flex-direction: column;
 }
