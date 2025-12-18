@@ -205,16 +205,6 @@ ng-container {
     padding: 0.5rem 0.8rem;
     font-size: 0.85rem;
   }
-
-  /* Ocultar texto "Reportar Avistamiento" en móviles muy pequeños */
-  a:nth-child(3) {
-    font-size: 0;
-  }
-
-  a:nth-child(3)::before {
-    content: '📍';
-    font-size: 1.2rem;
-  }
 }
 
 /* Efecto de pulso para enlaces importantes */
@@ -231,25 +221,6 @@ a[routerLink="/reportar-avistamiento"] {
   }
 }
 
-/* Efecto de hover especial para Home */
-a[routerLink="/"]::before {
-  content: '🏠 ';
-}
-
-/* Efecto para Mascotas Perdidas */
-a[routerLink="/mascotas-perdidas"]::before {
-  content: '🐾 ';
-}
-
-/* Efecto para Login */
-a[routerLink="/login"]::before {
-  content: '🔐 ';
-}
-
-/* Efecto para Registro */
-a[routerLink="/registro"]::before {
-  content: '📝 ';
-}
 
 /* Separador visual entre secciones */
 :host::after {
