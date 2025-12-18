@@ -1,0 +1,83 @@
+<h2>Registro de Mascota</h2>
+
+<form [formGroup]="mascotaForm" (ngSubmit)="submit()">
+
+  <input
+    type="text"
+    placeholder="Nombre"
+    formControlName="nombre"
+  >
+  <div *ngIf="mascotaForm.get('nombre')?.invalid && mascotaForm.get('nombre')?.touched" class="error">
+    <span *ngIf="mascotaForm.get('nombre')?.errors?.['required']">El nombre es obligatorio</span>
+  </div>
+
+  <select formControlName="tamanio">
+    <option value="">Seleccione tamaño</option>
+    <option *ngFor="let t of tamanios" [value]="t">{{ t }}</option>
+  </select>
+  <div *ngIf="mascotaForm.get('tamanio')?.invalid && mascotaForm.get('tamanio')?.touched" class="error">
+    <span *ngIf="mascotaForm.get('tamanio')?.errors?.['required']">El tamaño es obligatorio</span>
+  </div>
+
+  <select formControlName="color">
+    <option value="">Seleccione color</option>
+    <option *ngFor="let c of colores" [value]="c">{{ c }}</option>
+  </select>
+  <div *ngIf="mascotaForm.get('color')?.invalid && mascotaForm.get('color')?.touched" class="error">
+    <span *ngIf="mascotaForm.get('color')?.errors?.['required']">El color es obligatorio</span>
+  </div>
+
+  <textarea
+    placeholder="Descripción"
+    formControlName="descripcion">
+  </textarea>
+  <div *ngIf="mascotaForm.get('descripcion')?.invalid && mascotaForm.get('descripcion')?.touched" class="error">
+    <span *ngIf="mascotaForm.get('descripcion')?.errors?.['required']">La descripción es obligatoria</span>
+  </div>
+
+  <select formControlName="estado">
+    <option value="">Seleccione estado</option>
+    <option *ngFor="let e of estados" [value]="e">{{ e }}</option>
+  </select>
+  <div *ngIf="mascotaForm.get('estado')?.invalid && mascotaForm.get('estado')?.touched" class="error">
+    <span *ngIf="mascotaForm.get('estado')?.errors?.['required']">El estado es obligatorio</span>
+  </div>
+
+  <select formControlName="ciudad" (change)="onCiudadChange(+$any($event.target).value)">
+    <option value="">Seleccione una ciudad</option>
+    <option *ngFor="let ciudad of ciudades" [value]="ciudad.id">{{ ciudad.nombre }}</option>
+  </select>
+  <div *ngIf="mascotaForm.get('ciudad')?.invalid && mascotaForm.get('ciudad')?.touched" class="error">
+    <span *ngIf="mascotaForm.get('ciudad')?.errors?.['required']">La ciudad es obligatoria</span>
+  </div>
+
+  <select formControlName="barrio" (change)="onBarrioChange()">
+    <option value="">Seleccione un barrio</option>
+    <option *ngFor="let barrio of barrios" [value]="barrio.id">{{ barrio.nombre }}</option>
+  </select>
+  <div *ngIf="mascotaForm.get('barrio')?.invalid && mascotaForm.get('barrio')?.touched" class="error">
+    <span *ngIf="mascotaForm.get('barrio')?.errors?.['required']">El barrio es obligatorio</span>
+  </div>
+
+  <!-- Mapa - Solo se muestra cuando se seleccionan ciudad y barrio -->
+  <div *ngIf="showMap" class="map-section">
+    <h3>Ubicación exacta</h3>
+    <div class="map-container">
+      <app-mapa-mascotas
+        [mode]="'select'"
+        [centerLat]="mapCenterLat"
+        [centerLng]="mapCenterLng"
+        [zoom]="mapZoom"
+        (coordinatesSelected)="onCoordinatesSelected($event)">
+      </app-mapa-mascotas>
+    </div>
+    <div *ngIf="mascotaForm.get('latitud')?.invalid && mascotaForm.get('longitud')?.invalid && mascotaForm.get('latitud')?.touched" class="error">
+      <span>Debes seleccionar una ubicación en el mapa</span>
+    </div>
+  </div>
+
+  <button type="submit" [disabled]="mascotaForm.invalid">
+    Registrar Mascota
+  </button>
+
+</form>

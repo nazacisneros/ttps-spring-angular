@@ -1,0 +1,49 @@
+<div class="filtros-container">
+  <h3>Filtrar Mascotas</h3>
+
+  <form [formGroup]="filtroForm" class="filtros-form">
+    <div class="filtro-group">
+      <label for="ciudad">Ciudad:</label>
+      <select id="ciudad" formControlName="ciudadId" (change)="onCiudadChange(+$any($event.target).value)">
+        <option value="">Todas las ciudades</option>
+        <option *ngFor="let ciudad of ciudades" [value]="ciudad.id">{{ ciudad.nombre }}</option>
+      </select>
+    </div>
+
+    <div class="filtro-group">
+      <label for="barrio">Barrio:</label>
+      <select id="barrio" formControlName="barrioId">
+        <option value="">Todos los barrios</option>
+        <option *ngFor="let barrio of barrios" [value]="barrio.id">{{ barrio.nombre }}</option>
+      </select>
+    </div>
+
+    <div class="filtro-group">
+      <label for="tamanio">Tamaño:</label>
+      <select id="tamanio" formControlName="tamanio">
+        <option value="">Todos los tamaños</option>
+        <option *ngFor="let tamanio of tamanios" [value]="tamanio">{{ tamanio }}</option>
+      </select>
+    </div>
+
+    <div class="filtro-group">
+      <label for="color">Color:</label>
+      <select id="color" formControlName="color">
+        <option value="">Todos los colores</option>
+        <option *ngFor="let color of colores" [value]="color">{{ color }}</option>
+      </select>
+    </div>
+
+    <div class="filtro-group">
+      <label for="estado">Estado:</label>
+      <select id="estado" formControlName="estado">
+        <option value="">Todos los estados</option>
+        <option *ngFor="let estado of estados" [value]="estado">{{ estado }}</option>
+      </select>
+    </div>
+
+    <button type="button" (click)="limpiarFiltros()" class="btn-limpiar">
+      Limpiar Filtros
+    </button>
+  </form>
+</div>

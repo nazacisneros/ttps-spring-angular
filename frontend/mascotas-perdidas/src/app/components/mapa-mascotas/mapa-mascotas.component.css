@@ -1,0 +1,18 @@
+.map-container {
+  width: 100%;
+  margin: 1rem 0;
+}
+
+.map {
+  height: 300px;
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.map-instructions {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #666;
+  text-align: center;
+}

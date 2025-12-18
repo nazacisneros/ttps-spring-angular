@@ -18,7 +18,7 @@ public class Usuario {
     protected String telefono;
     protected String contrasenia;
     protected boolean condicion, esAdmin;
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "barrio_id")
     protected Barrio barrio;
     @OneToOne(cascade = CascadeType.ALL)
@@ -30,7 +30,7 @@ public class Usuario {
     protected List<Avistamiento> avistamientos_publicados;
     @OneToMany(mappedBy = "usuarioPublicador", cascade = CascadeType.ALL)
     protected List<Publicacion> publicaciones;
-    @OneToMany(mappedBy = "mascota_id", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     protected List<Mascota> mascotas;
 
     public Usuario() {

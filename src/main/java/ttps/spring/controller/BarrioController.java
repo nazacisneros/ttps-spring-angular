@@ -1,22 +1,24 @@
 package ttps.spring.controller;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ttps.spring.entity.Barrio;
-import ttps.spring.exception.barrio.BarrioNoEncontradoException;
-import ttps.spring.model.ErrorResponse;
+import ttps.spring.entity.Ciudad;
 import ttps.spring.service.GenericService;
 import ttps.spring.service.BarrioService;
+import ttps.spring.service.CiudadService;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/barrios")
 public class BarrioController extends GenericController<Barrio, Long> {
 
     private final BarrioService service;
+    private final CiudadService ciudadService;
 
-    public BarrioController(BarrioService service) {
+    public BarrioController(BarrioService service, CiudadService ciudadService) {
         this.service = service;
+        this.ciudadService = ciudadService;
     }
 
     @Override
@@ -34,13 +36,14 @@ public class BarrioController extends GenericController<Barrio, Long> {
         return entidad.getId();
     }
 
-    // Exception Handlers
-    @ExceptionHandler(BarrioNoEncontradoException.class)
-    public ResponseEntity<ErrorResponse> handleBarrioNoEncontrado(BarrioNoEncontradoException e) {
-        ErrorResponse error = new ErrorResponse(
-                HttpStatus.NOT_FOUND.value(),
-                e.getMessage(),
-                System.currentTimeMillis());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    @GetMapping("/ciudad/{ciudadId}")
+    public ResponseEntity<List<Barrio>> getBarriosByCiudad(@PathVariable Long ciudadId) {
+        Ciudad ciudad = ciudadService.obtener(ciudadId).orElse(null);
+        if (ciudad == null) {
+            return ResponseEntity.notFound().build();
+        }
+        List<Barrio> barrios = service.findByCiudad(ciudad);
+        return ResponseEntity.ok(barrios);
     }
+
 }

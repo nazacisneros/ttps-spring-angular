@@ -1,0 +1,48 @@
+<h2>{{ editMode ? 'Editar datos personales' : 'Registro de usuario' }}</h2>
+
+<div *ngIf="serverError" class="server-error">
+  {{ serverError }}
+</div>
+
+<form [formGroup]="registerForm" (ngSubmit)="submit()">
+
+  <input formControlName="nombre" placeholder="Nombre">
+  <div *ngIf="registerForm.get('nombre')?.invalid && registerForm.get('nombre')?.touched" class="error">
+    <span *ngIf="registerForm.get('nombre')?.errors?.['required']">El nombre es obligatorio</span>
+  </div>
+
+  <input formControlName="apellido" placeholder="Apellido">
+  <div *ngIf="registerForm.get('apellido')?.invalid && registerForm.get('apellido')?.touched" class="error">
+    <span *ngIf="registerForm.get('apellido')?.errors?.['required']">El apellido es obligatorio</span>
+  </div>
+
+  <input formControlName="email" placeholder="Correo electrónico" type="email">
+  <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="error">
+    <span *ngIf="registerForm.get('email')?.errors?.['required']">El email es obligatorio</span>
+    <span *ngIf="registerForm.get('email')?.errors?.['email']">Formato de email inválido</span>
+  </div>
+
+  <input
+    *ngIf="!editMode"
+    type="password"
+    formControlName="password"
+    placeholder="Contraseña"
+  >
+
+  <input formControlName="telefono" placeholder="Teléfono">
+
+  <select formControlName="ciudad" (change)="onCiudadChange(+$any($event.target).value)">
+    <option value="">Seleccione una ciudad</option>
+    <option *ngFor="let ciudad of ciudades" [value]="ciudad.id">{{ ciudad.nombre }}</option>
+  </select>
+
+  <select formControlName="barrio">
+    <option value="">Seleccione un barrio</option>
+    <option *ngFor="let barrio of barrios" [value]="barrio.id">{{ barrio.nombre }}</option>
+  </select>
+
+  <button type="submit">
+    {{ editMode ? 'Guardar cambios' : 'Registrarse' }}
+  </button>
+
+</form>

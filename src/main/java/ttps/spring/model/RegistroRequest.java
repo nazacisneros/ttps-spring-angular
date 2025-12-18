@@ -6,8 +6,10 @@ public class RegistroRequest {
     private String email;
     private String telefono;
     private String contrasenia;
+    private Long barrioId;
 
-    public RegistroRequest() {}
+    public RegistroRequest() {
+    }
 
     public String getNombre() {
         return nombre;
@@ -47,5 +49,13 @@ public class RegistroRequest {
 
     public void setContrasenia(String contrasenia) {
         this.contrasenia = contrasenia;
+    }
+
+    public Long getBarrioId() {
+        return barrioId;
+    }
+
+    public void setBarrioId(Long barrioId) {
+        this.barrioId = barrioId;
     }
 }
