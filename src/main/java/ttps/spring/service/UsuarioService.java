@@ -4,10 +4,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ttps.spring.entity.Barrio;
+import ttps.spring.entity.Ranking;
 import ttps.spring.entity.Usuario;
 import ttps.spring.repository.UsuarioRepository;
 import ttps.spring.model.LoginRequest;
 import ttps.spring.model.RegistroRequest;
+import ttps.spring.service.BarrioService;
+import ttps.spring.service.RankingService;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.util.Optional;
@@ -17,10 +21,15 @@ public class UsuarioService extends GenericService<Usuario, Long> {
 
     private final UsuarioRepository repository;
     private final PasswordEncoder passwordEncoder;
+    private final BarrioService barrioService;
+    private final RankingService rankingService;
 
-    public UsuarioService(UsuarioRepository repository, PasswordEncoder passwordEncoder) {
+    public UsuarioService(UsuarioRepository repository, PasswordEncoder passwordEncoder,
+            BarrioService barrioService, RankingService rankingService) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
+        this.barrioService = barrioService;
+        this.rankingService = rankingService;
     }
 
     @Override
@@ -35,28 +44,37 @@ public class UsuarioService extends GenericService<Usuario, Long> {
 
     public Usuario registrar(RegistroRequest request) {
 
-        if (repository.findByEmail(request.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("El email ya está registrado");
+        if (buscarPorEmail(request.getEmail()).isPresent()) {
+            throw new IllegalArgumentException(
+                    "Ya existe una cuenta con este correo electrónico. Por favor, utiliza otro email o intenta iniciar sesión.");
         }
 
-        Usuario usuario = new Usuario();
-        usuario.setNombre(request.getNombre());
-        usuario.setApellido(request.getApellido());
-        usuario.setEmail(request.getEmail());
-        usuario.setTelefono(request.getTelefono());
-        usuario.setContrasenia(
-                passwordEncoder.encode(request.getContrasenia()));
-        usuario.setCondicion(true);
-        usuario.setEsAdmin(false);
+        Ranking ranking = new Ranking("Principiante", 0);
+        rankingService.crear(ranking);
+
+        Barrio barrio = null;
+        if (request.getBarrioId() != null) {
+            barrio = barrioService.obtener(request.getBarrioId())
+                    .orElseThrow(() -> new IllegalArgumentException("Barrio no encontrado"));
+        }
+
+        Usuario usuario = new Usuario(
+                request.getNombre(),
+                request.getApellido(),
+                request.getEmail(),
+                request.getTelefono(),
+                passwordEncoder.encode(request.getContrasenia()),
+                true,
+                false,
+                barrio,
+                ranking);
 
         return repository.save(usuario);
     }
 
     @Transactional(readOnly = true)
     public Usuario login(LoginRequest request) {
-        System.out.println("REQUEST EMAIL: " + request.getEmail());
-        System.out.println("REQUEST PASS: " + request.getContrasenia());
-        Usuario usuario = repository.findByEmail(request.getEmail())
+        Usuario usuario = buscarPorEmail(request.getEmail())
                 .orElseThrow(() -> new EntityNotFoundException("Email o contraseña incorrectos"));
 
         if (!passwordEncoder.matches(
@@ -113,8 +131,4 @@ public class UsuarioService extends GenericService<Usuario, Long> {
         repository.save(usuario);
     }
 
-    public Usuario findByEmail(String email) {
-        return repository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-    }
 }

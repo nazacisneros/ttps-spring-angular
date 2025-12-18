@@ -4,7 +4,8 @@ export interface UsuarioPerfil {
   apellido: string;
   email: string;
   telefono: string;
-  barrio: string;
-  ciudad: string;
-  cbu: string;
+  barrioId?: number;
+  barrioNombre?: string;
+  ciudadId?: number;
+  ciudadNombre?: string;
 }

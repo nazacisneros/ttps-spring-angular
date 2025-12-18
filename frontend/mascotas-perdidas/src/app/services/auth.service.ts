@@ -13,7 +13,8 @@ export interface UsuarioAuth {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private api = 'http://localhost:8080/api/auth';
+  private baseUrl = 'http://localhost:8080/api';
+  private api = `${this.baseUrl}/auth`;
   private userSubject = new BehaviorSubject<UsuarioAuth | null>(null);
   user$ = this.userSubject.asObservable();
 
@@ -25,7 +26,6 @@ export class AuthService {
   }
 
   login(data: any) {
-    // CORREGIDO: usar paréntesis () en lugar de backticks
     return this.http.post<any>(`${this.api}/login`, data).pipe(
       tap(res => {
         localStorage.setItem('jwt', res.token);
@@ -67,21 +67,20 @@ export class AuthService {
       payload.contrasenia = payload.password;
       delete payload.password;
     }
-    // CORREGIDO: usar paréntesis
     return this.http.post(`${this.api}/registro`, payload);
   }
 
   getProfile() {
-    // CORREGIDO: usar paréntesis
     return this.http.get<UsuarioPerfil>(`${this.api}/me`);
   }
 
   updateProfile(data: any, id?: number) {
     if (id) {
-      // CORREGIDO: usar paréntesis
-      return this.http.put(`/api/usuarios/${id}/perfil`, data);
+      // si hay id, asumir que es "mi perfil" y usar PUT /auth/me
+      // (evita problemas de 403 por identidad)
+      // return this.http.put(`${this.baseUrl}/usuarios/${id}/perfil`, data);
     }
-    // CORREGIDO: usar paréntesis
+
     return this.http.put(`${this.api}/me`, data);
   }
 }

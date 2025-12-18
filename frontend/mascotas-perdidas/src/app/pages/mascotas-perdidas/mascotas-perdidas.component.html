@@ -1,1 +1,90 @@
-<p>mascotas-perdidas works!</p>
+<div class="mascotas-perdidas-container">
+  <h1>Mascotas Perdidas</h1>
+
+  <!--  Botones de vista -->
+  <div class="view-toggle">
+    <button
+      [class.active]="viewMode === 'list'"
+      (click)="toggleViewMode('list')"
+      class="toggle-btn">
+        Lista
+    </button>
+    <button
+      [class.active]="viewMode === 'map'"
+      (click)="toggleViewMode('map')"
+      class="toggle-btn">
+        Mapa
+    </button>
+  </div>
+
+  <!-- Filtros -->
+  <app-filtro-mascotas (filtrosChanged)="onFiltrosChanged($event)"></app-filtro-mascotas>
+
+  <!-- Carga -->
+  <div *ngIf="isLoading" class="loading">
+    <p>Cargando mascotas...</p>
+  </div>
+
+  <!-- Lista de publicaciones -->
+  <div *ngIf="!isLoading && viewMode === 'list'" class="publicaciones-list">
+    <div *ngIf="filteredPublicaciones.length === 0" class="no-results">
+      <p>No se encontraron mascotas que coincidan con los filtros seleccionados.</p>
+    </div>
+
+    <div *ngFor="let publicacion of filteredPublicaciones" class="publicacion-card">
+      <div class="publicacion-header">
+        <h3>{{ publicacion.nombreMascota }}</h3>
+        <span class="estado" [class]="'estado-' + publicacion.estadoMascota.toLowerCase()">
+          {{ publicacion.estadoMascota }}
+        </span>
+      </div>
+
+      <div class="publicacion-details">
+        <div class="detail-row">
+          <span class="label">Tamaño:</span>
+          <span class="value">{{ publicacion.tamanioMascota }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Color:</span>
+          <span class="value">{{ publicacion.colorMascota }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Fecha:</span>
+          <span class="value">{{ formatDate(publicacion.fecha) }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Hora:</span>
+          <span class="value">{{ formatTime(publicacion.hora) }}</span>
+        </div>
+      </div>
+
+      <div class="publicacion-description">
+        <p>{{ publicacion.descripcionMascota }}</p>
+      </div>
+
+      <div class="publicacion-actions">
+        <button class="btn-contactar">Contactar</button>
+        <button class="btn-ver-mapa" (click)="focusOnPublication(publicacion)">Ver en mapa</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vista del mapa -->
+  <div *ngIf="!isLoading && viewMode === 'map'" class="map-view">
+    <div class="map-container">
+      <app-mapa-mascotas
+        [mode]="'view'"
+        [publicaciones]="filteredPublicaciones"
+        [selectedPublicacion]="selectedPublicacion"
+        [centerLat]="mapCenterLat"
+        [centerLng]="mapCenterLng"
+        [zoom]="mapZoom">
+      </app-mapa-mascotas>
+    </div>
+
+    <div class="map-info">
+      <p>Mostrando {{ filteredPublicaciones.length }} mascota(s) en el mapa</p>
+      <small>Haz clic en los marcadores para más información</small>
+    </div>
+  </div>
+</div>

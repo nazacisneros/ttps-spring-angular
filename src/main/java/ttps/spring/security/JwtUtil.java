@@ -16,7 +16,8 @@ import javax.crypto.SecretKey;
 @Component
 public class JwtUtil {
 
-    private final SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    private final SecretKey key = Keys
+            .hmacShaKeyFor("mi-clave-secreta-super-segura-para-jwt-en-desarrollo".getBytes(StandardCharsets.UTF_8));
 
     public String generateToken(UserDetails userDetails) {
         return Jwts.builder()

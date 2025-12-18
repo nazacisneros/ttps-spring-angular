@@ -1,14 +1,12 @@
 package ttps.spring.model;
 
-public class RegistroRequest {
+public class UsuarioUpdateRequest {
     private String nombre;
     private String apellido;
-    private String email;
     private String telefono;
-    private String contrasenia;
     private Long barrioId;
 
-    public RegistroRequest() {
+    public UsuarioUpdateRequest() {
     }
 
     public String getNombre() {
@@ -27,28 +25,12 @@ public class RegistroRequest {
         this.apellido = apellido;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public String getTelefono() {
         return telefono;
     }
 
     public void setTelefono(String telefono) {
         this.telefono = telefono;
-    }
-
-    public String getContrasenia() {
-        return contrasenia;
-    }
-
-    public void setContrasenia(String contrasenia) {
-        this.contrasenia = contrasenia;
     }
 
     public Long getBarrioId() {

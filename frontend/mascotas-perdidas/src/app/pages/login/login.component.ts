@@ -14,6 +14,7 @@ import { Router, RouterModule  } from '@angular/router';
 export class LoginComponent {
 
   loginForm!: FormGroup;
+  loginError: string = '';
 
   constructor(
     private fb: FormBuilder,
@@ -29,14 +30,23 @@ export class LoginComponent {
   submit() {
     if (this.loginForm.invalid) return;
 
+    this.loginError = '';
+
     this.authService.login(this.loginForm.value)
       .subscribe({
         next: () => {
           console.log('Login OK');
-          this.router.navigate(['/perfil']);
+          this.router.navigate(['/']);
         },
-        error: () => {
-          alert('Credenciales incorrectas');
+        error: (error: any) => {
+          console.error('Error en login:', error);
+          if (error.error && typeof error.error === 'string') {
+            this.loginError = error.error;
+          } else if (error.message) {
+            this.loginError = error.message;
+          } else {
+            this.loginError = 'Email o contraseña incorrectos';
+          }
         }
       });
   }

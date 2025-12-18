@@ -19,10 +19,12 @@ public class Mascota {
     private List<Byte[]> fotos;
     @OneToMany(mappedBy = "mascota", cascade = CascadeType.ALL)
     private List<Avistamiento> avistamientos;
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-    public Mascota() {}
+    public Mascota() {
+    }
 
     public Mascota(String nombre, String tamanio, String color, String descripcion, String estado) {
         this.nombre = nombre;
@@ -94,13 +96,20 @@ public class Mascota {
         this.avistamientos.remove(id_avistamiento);
     }
 
-    public void setUsuario(Usuario usuario) {this.usuario=usuario;}
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
 
-    public Usuario getUsuario() {return this.usuario;}
+    public Usuario getUsuario() {
+        return this.usuario;
+    }
 
-    public void setEstado(String estado) {this.estado=estado;}
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
 
-    public String getEstado() {return this.estado;}
-
+    public String getEstado() {
+        return this.estado;
+    }
 
 }

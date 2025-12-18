@@ -1,18 +1,24 @@
 package ttps.spring.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ttps.spring.entity.Barrio;
+import ttps.spring.entity.Ciudad;
 import ttps.spring.service.GenericService;
 import ttps.spring.service.BarrioService;
+import ttps.spring.service.CiudadService;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/barrios")
 public class BarrioController extends GenericController<Barrio, Long> {
 
     private final BarrioService service;
+    private final CiudadService ciudadService;
 
-    public BarrioController(BarrioService service) {
+    public BarrioController(BarrioService service, CiudadService ciudadService) {
         this.service = service;
+        this.ciudadService = ciudadService;
     }
 
     @Override
@@ -28,6 +34,16 @@ public class BarrioController extends GenericController<Barrio, Long> {
     @Override
     protected Long getId(Barrio entidad) {
         return entidad.getId();
+    }
+
+    @GetMapping("/ciudad/{ciudadId}")
+    public ResponseEntity<List<Barrio>> getBarriosByCiudad(@PathVariable Long ciudadId) {
+        Ciudad ciudad = ciudadService.obtener(ciudadId).orElse(null);
+        if (ciudad == null) {
+            return ResponseEntity.notFound().build();
+        }
+        List<Barrio> barrios = service.findByCiudad(ciudad);
+        return ResponseEntity.ok(barrios);
     }
 
 }
