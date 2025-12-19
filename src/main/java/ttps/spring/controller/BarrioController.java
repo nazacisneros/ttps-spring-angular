@@ -42,7 +42,6 @@ public class BarrioController extends GenericController<Barrio, Long> {
         return entidad.getId();
     }
 
-    // Endpoint específico para obtener todos los barrios como DTOs
     @GetMapping("/todos")
     public ResponseEntity<List<BarrioDto>> obtenerTodosLosBarrios() {
         List<Barrio> barrios = service.listar();
@@ -50,9 +49,9 @@ public class BarrioController extends GenericController<Barrio, Long> {
                 .map(this::convertirADto)
                 .collect(Collectors.toList());
 
-        System.out.println("DEBUG - Listando todos los barrios: " + barriosDto.size() + " barrios encontrados");
         if (barriosDto.size() > 0) {
-            System.out.println("DEBUG - Primer barrio: id=" + barriosDto.get(0).getId() + ", nombre=" + barriosDto.get(0).getNombre());
+            System.out.println("Primer barrio: id=" + barriosDto.get(0).getId() + ", nombre="
+                    + barriosDto.get(0).getNombre());
         }
 
         return ResponseEntity.ok(barriosDto);
@@ -71,7 +70,6 @@ public class BarrioController extends GenericController<Barrio, Long> {
         return ResponseEntity.ok(barriosDto);
     }
 
-    // Método auxiliar para convertir Barrio a BarrioDto
     private BarrioDto convertirADto(Barrio barrio) {
         BarrioDto dto = new BarrioDto();
         dto.setId(barrio.getId());
@@ -85,7 +83,6 @@ public class BarrioController extends GenericController<Barrio, Long> {
         return dto;
     }
 
-    // Exception Handlers
     @ExceptionHandler(BarrioNoEncontradoException.class)
     public ResponseEntity<ErrorResponse> handleBarrioNoEncontradoException(BarrioNoEncontradoException ex) {
         ErrorResponse error = new ErrorResponse(

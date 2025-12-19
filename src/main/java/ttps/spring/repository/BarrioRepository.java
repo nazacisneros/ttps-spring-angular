@@ -13,11 +13,5 @@ public interface BarrioRepository extends JpaRepository<Barrio, Long> {
 
     List<Barrio> findByCiudad(Ciudad ciudad);
 
-    /**
-     * Busca un barrio por nombre dentro de una ciudad específica
-     * @param nombre Nombre del barrio
-     * @param ciudad Ciudad a la que pertenece
-     * @return Optional con el barrio si existe
-     */
     Optional<Barrio> findByNombreAndCiudad(String nombre, Ciudad ciudad);
 }

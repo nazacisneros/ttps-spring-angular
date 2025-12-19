@@ -48,7 +48,6 @@ public abstract class GenericController<T, ID> {
 
     protected abstract ID getId(T entidad);
 
-    // Generic Exception Handler
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleEntityNotFound(EntityNotFoundException e) {
         ErrorResponse error = new ErrorResponse(

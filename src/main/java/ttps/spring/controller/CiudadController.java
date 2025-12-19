@@ -34,7 +34,6 @@ public class CiudadController extends GenericController<Ciudad, Long> {
         return entidad.getId();
     }
 
-    // Exception Handlers
     @ExceptionHandler(CiudadNoEncontradaException.class)
     public ResponseEntity<ErrorResponse> handleCiudadNoEncontrada(CiudadNoEncontradaException e) {
         ErrorResponse error = new ErrorResponse(

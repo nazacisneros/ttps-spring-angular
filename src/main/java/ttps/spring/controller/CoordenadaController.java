@@ -34,7 +34,6 @@ public class CoordenadaController extends GenericController<Coordenada, Long> {
         return entidad.getId();
     }
 
-    // Exception Handlers
     @ExceptionHandler(CoordenadaNoEncontradaException.class)
     public ResponseEntity<ErrorResponse> handleCoordenadaNoEncontrada(CoordenadaNoEncontradaException e) {
         ErrorResponse error = new ErrorResponse(

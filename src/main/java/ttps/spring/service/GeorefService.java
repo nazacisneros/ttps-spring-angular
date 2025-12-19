@@ -80,14 +80,14 @@ public class GeorefService {
             response.setCiudad(ciudadNombreUnico);
         } else {
             System.out.println(
-                    "  WARNING - No se pudo obtener nombre de ciudad (Municipio/LocalidadCensal o Provincia son null)");
+                    "  No se pudo obtener nombre de ciudad ");
         }
 
         if (ubicacion.getDepartamento() != null && ubicacion.getDepartamento().getNombre() != null) {
             String barrioNombre = ubicacion.getDepartamento().getNombre();
             response.setBarrio(barrioNombre);
         } else {
-            System.out.println("  WARNING - No se pudo obtener nombre de barrio (Departamento es null)");
+            System.out.println(" No se pudo obtener nombre de barrio");
         }
 
         return response;

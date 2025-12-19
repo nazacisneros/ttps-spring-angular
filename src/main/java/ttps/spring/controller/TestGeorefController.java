@@ -54,7 +54,7 @@ public class TestGeorefController {
                             : "Sin ciudad"));
 
         } catch (Exception e) {
-            System.err.println("ERROR - Error en registro de prueba: " + e.getMessage());
+            System.err.println("Error en registro de prueba: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
         }
@@ -64,7 +64,7 @@ public class TestGeorefController {
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
         ErrorResponse error = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
-                "Parámetros inválidos: " + ex.getMessage(),
+                "Parametros invalidos: " + ex.getMessage(),
                 System.currentTimeMillis());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }

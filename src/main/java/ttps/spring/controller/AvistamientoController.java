@@ -77,7 +77,6 @@ public class AvistamientoController extends GenericController<Avistamiento, Long
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Exception Handlers
     @ExceptionHandler(AvistamientoNoEncontradoException.class)
     public ResponseEntity<ErrorResponse> handleAvistamientoNoEncontrado(AvistamientoNoEncontradoException e) {
         ErrorResponse error = new ErrorResponse(

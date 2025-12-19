@@ -75,17 +75,10 @@ export class AuthService {
   }
 
   updateProfile(data: any, id?: number) {
-    if (id) {
-      // si hay id, asumir que es "mi perfil" y usar PUT /auth/me
-      // (evita problemas de 403 por identidad)
-      // return this.http.put(`${this.baseUrl}/usuarios/${id}/perfil`, data);
-    }
-
     return this.http.put(`${this.api}/me`, data);
   }
 
   refreshUserData() {
-    // Obtener los datos actualizados del usuario desde el backend
     this.getProfile().subscribe({
       next: (profile) => {
         const updatedUser: UsuarioAuth = {
@@ -95,7 +88,6 @@ export class AuthService {
           email: profile.email,
           esAdmin: profile.esAdmin
         };
-        // Actualizar localStorage y BehaviorSubject
         localStorage.setItem('user', JSON.stringify(updatedUser));
         this.userSubject.next(updatedUser);
       },

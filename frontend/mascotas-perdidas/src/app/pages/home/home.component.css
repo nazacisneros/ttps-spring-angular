@@ -1,4 +1,4 @@
-/* Estilos principales del contenedor */
+
 :host {
   display: block;
   min-height: calc(100vh - 200px);
@@ -18,14 +18,14 @@
   }
 }
 
-/* Estilos para ambos contenedores principales */
+
 div {
   max-width: 1200px;
   margin: 0 auto;
   text-align: center;
 }
 
-/* Títulos */
+
 h1 {
   font-size: 3.5rem;
   font-weight: 800;
@@ -47,7 +47,7 @@ h1 {
   }
 }
 
-/* Párrafos */
+
 p {
   font-size: 1.4rem;
   color: #f0f0f0;
@@ -71,7 +71,7 @@ p {
   }
 }
 
-/* Contenedor de acciones/botones */
+
 .acciones {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -96,7 +96,7 @@ p {
   }
 }
 
-/* Estilos de botones */
+
 button {
   padding: 1.2rem 2rem;
   font-size: 1.1rem;
@@ -140,7 +140,7 @@ button:active {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
-/* Botón primario */
+
 button.primary {
   background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
   color: #ffffff;
@@ -154,7 +154,7 @@ button.primary:hover {
   box-shadow: 0 8px 30px rgba(255, 107, 107, 0.5);
 }
 
-/* Botón de peligro */
+
 button.danger {
   background: linear-gradient(135deg, #ff4757 0%, #c44569 100%);
   color: #ffffff;
@@ -166,7 +166,7 @@ button.danger:hover {
   box-shadow: 0 6px 20px rgba(255, 71, 87, 0.4);
 }
 
-/* Efectos para pantallas más pequeñas */
+
 @media (max-width: 968px) {
   .acciones {
     grid-template-columns: 1fr;
@@ -202,7 +202,7 @@ button.danger:hover {
   }
 }
 
-/* Pantallas extra pequeñas */
+
 @media (max-width: 480px) {
   h1 {
     font-size: 2rem;
@@ -213,7 +213,7 @@ button.danger:hover {
   }
 }
 
-/* Añadir efectos decorativos */
+
 :host::before {
   content: '🐾';
   position: absolute;

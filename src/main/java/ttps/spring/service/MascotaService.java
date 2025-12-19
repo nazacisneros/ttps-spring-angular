@@ -76,36 +76,22 @@ public class MascotaService extends GenericService<Mascota, Long> {
     }
 
     public void eliminarMascota(Long usuarioId, Long mascotaId) {
-        System.out.println("DEBUG Service - eliminarMascota llamado:");
-        System.out.println("  usuarioId: " + usuarioId);
-        System.out.println("  mascotaId: " + mascotaId);
 
         Mascota mascota = repository.findById(mascotaId)
                 .orElseThrow(() -> new EntityNotFoundException("Mascota no encontrada con ID: " + mascotaId));
-
-        System.out.println("  Mascota encontrada: " + mascota.getNombre());
-        System.out.println("  Mascota.getUsuario() es null?: " + (mascota.getUsuario() == null));
-
         if (mascota.getUsuario() == null) {
-            System.out.println("  ERROR: La mascota no tiene usuario asignado!");
             throw new IllegalArgumentException("La mascota no tiene un usuario asignado. " +
                     "Posiblemente fue creada antes de implementar la asignación de usuarios.");
         }
 
         Long usuarioDuenioId = mascota.getUsuario().getId();
-        System.out.println("  Usuario dueño ID: " + usuarioDuenioId);
-        System.out.println("  Usuario solicitante ID: " + usuarioId);
-        System.out.println("  IDs coinciden?: " + usuarioDuenioId.equals(usuarioId));
 
         if (!usuarioDuenioId.equals(usuarioId)) {
-            System.out.println("  ERROR: Los IDs no coinciden!");
             throw new IllegalArgumentException("No tienes permiso para eliminar esta mascota. " +
                     "Dueño: " + usuarioDuenioId + ", Solicitante: " + usuarioId);
         }
 
-        System.out.println("  Validación OK - Procediendo a eliminar mascota");
         repository.deleteById(mascotaId);
-        System.out.println("  Mascota eliminada exitosamente");
     }
 
     public Mascota marcarComoPerdida(Long mascotaId) {
