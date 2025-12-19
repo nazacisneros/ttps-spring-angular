@@ -2,19 +2,14 @@
   <h3>Filtrar Mascotas</h3>
 
   <form [formGroup]="filtroForm" class="filtros-form">
-    <div class="filtro-group">
-      <label for="ciudad">Ciudad:</label>
-      <select id="ciudad" formControlName="ciudadId" (change)="onCiudadChange(+$any($event.target).value)">
-        <option value="">Todas las ciudades</option>
-        <option *ngFor="let ciudad of ciudades" [value]="ciudad.id">{{ ciudad.nombre }}</option>
-      </select>
-    </div>
 
     <div class="filtro-group">
       <label for="barrio">Barrio:</label>
       <select id="barrio" formControlName="barrioId">
         <option value="">Todos los barrios</option>
-        <option *ngFor="let barrio of barrios" [value]="barrio.id">{{ barrio.nombre }}</option>
+        <option *ngFor="let barrio of barrios; trackBy: trackByBarrioId" [value]="barrio.id">
+          {{ barrio.nombre }}
+        </option>
       </select>
     </div>
 

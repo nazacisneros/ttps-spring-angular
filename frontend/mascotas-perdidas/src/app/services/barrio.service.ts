@@ -16,7 +16,7 @@ export class BarrioService {
   constructor(private http: HttpClient) {}
 
   getBarrios(): Observable<Barrio[]> {
-    return this.http.get<Barrio[]>(`${this.baseUrl}/barrios`);
+    return this.http.get<Barrio[]>(`${this.baseUrl}/barrios/todos`);
   }
 
   getBarriosByCiudad(ciudadId: number): Observable<Barrio[]> {

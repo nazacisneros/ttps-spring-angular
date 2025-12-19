@@ -1,7 +1,6 @@
-import { Component, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Output, EventEmitter, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { CiudadService, Ciudad } from '../../services/ciudad.service';
 import { BarrioService, Barrio } from '../../services/barrio.service';
 import { COLORES_MASCOTA, TAMANIOS_MASCOTA, ESTADOS_MASCOTA } from '../../constants/mascota.constants';
 
@@ -17,7 +16,6 @@ export class FiltroMascotasComponent implements OnInit {
   @Output() filtrosChanged = new EventEmitter<any>();
 
   filtroForm: FormGroup;
-  ciudades: Ciudad[] = [];
   barrios: Barrio[] = [];
 
   tamanios = TAMANIOS_MASCOTA;
@@ -26,11 +24,10 @@ export class FiltroMascotasComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private ciudadService: CiudadService,
-    private barrioService: BarrioService
+    private barrioService: BarrioService,
+    private cdr: ChangeDetectorRef
   ) {
     this.filtroForm = this.fb.group({
-      ciudadId: [''],
       barrioId: [''],
       tamanio: [''],
       color: [''],
@@ -43,36 +40,80 @@ export class FiltroMascotasComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loadCiudades();
+    this.loadBarrios();
   }
 
-  loadCiudades() {
-    this.ciudadService.getCiudades().subscribe(ciudades => {
-      this.ciudades = ciudades;
+  loadBarrios() {
+    console.log('=== Iniciando carga de barrios ===');
+    console.log('Estado inicial - barrios.length:', this.barrios.length);
+
+    this.barrioService.getBarrios().subscribe({
+      next: (barrios) => {
+        console.log('✅ Respuesta recibida del backend');
+        console.log('Datos raw:', JSON.stringify(barrios));
+        console.log('Cantidad de barrios:', barrios?.length || 0);
+        console.log('Es array?:', Array.isArray(barrios));
+
+        if (!barrios) {
+          console.error('❌ Barrios es null o undefined');
+          this.barrios = [];
+          return;
+        }
+
+        if (!Array.isArray(barrios)) {
+          console.error('❌ Barrios NO es un array');
+          this.barrios = [];
+          return;
+        }
+
+        if (barrios.length === 0) {
+          console.warn('⚠️ El array de barrios está vacío');
+          this.barrios = [];
+          return;
+        }
+
+        console.log('Primer barrio completo:', barrios[0]);
+        console.log('  - id:', barrios[0].id, '(tipo:', typeof barrios[0].id, ')');
+        console.log('  - nombre:', barrios[0].nombre, '(tipo:', typeof barrios[0].nombre, ')');
+
+        // Asignar los barrios
+        this.barrios = [...barrios]; // Crear nueva referencia
+
+        console.log('✅ Barrios asignados a la propiedad');
+        console.log('this.barrios.length:', this.barrios.length);
+        console.log('Contenido completo:', this.barrios);
+
+        // Forzar detección de cambios
+        this.cdr.detectChanges();
+        console.log('✅ Detección de cambios forzada');
+
+        // Verificar después de un momento
+        setTimeout(() => {
+          console.log('=== Verificación post-asignación ===');
+          console.log('barrios en template:', this.barrios.length);
+        }, 100);
+      },
+      error: (error) => {
+        console.error('❌ ERROR cargando barrios');
+        console.error('Status:', error.status);
+        console.error('Message:', error.message);
+        console.error('Error completo:', error);
+        this.barrios = [];
+      }
     });
-  }
-
-  onCiudadChange(ciudadId: number) {
-    if (ciudadId) {
-      this.barrioService.getBarriosByCiudad(ciudadId).subscribe(barrios => {
-        this.barrios = barrios;
-        // Resetear seleccion de barrio cuando cambia la ciudad
-        this.filtroForm.patchValue({ barrioId: '' });
-      });
-    } else {
-      this.barrios = [];
-      this.filtroForm.patchValue({ barrioId: '' });
-    }
   }
 
   limpiarFiltros() {
     this.filtroForm.patchValue({
-      ciudadId: '',
       barrioId: '',
       tamanio: '',
       color: '',
       estado: ''
     });
-    this.barrios = [];
+  }
+
+  // TrackBy function para mejorar el rendimiento del *ngFor
+  trackByBarrioId(index: number, barrio: Barrio): number {
+    return barrio.id;
   }
 }
