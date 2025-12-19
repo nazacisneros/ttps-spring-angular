@@ -11,7 +11,7 @@ public class Publicacion extends Registro {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
     private String estado;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JoinColumn(name = "mascota_id")
     private Mascota mascota;
     @ManyToOne
