@@ -18,6 +18,5 @@ export const TAMANIOS_MASCOTA = [
 
 export const ESTADOS_MASCOTA = [
   'Perdida',
-  'Encontrada',
-  'En adopción'
+  'Encontrada'
 ];
