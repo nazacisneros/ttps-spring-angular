@@ -49,9 +49,7 @@ export class RegistroComponent implements OnInit {
   ngOnInit() {
     if (this.route.snapshot.url[0]?.path === 'perfil') {
       this.editMode = true;
-      // En modo edición, el email no se puede cambiar
       this.registerForm.get('email')?.disable();
-      // Los campos de ubicación son opcionales en edición
       this.registerForm.get('telefono')?.clearValidators();
       this.registerForm.get('latitud')?.clearValidators();
       this.registerForm.get('longitud')?.clearValidators();
@@ -59,10 +57,10 @@ export class RegistroComponent implements OnInit {
       this.registerForm.get('latitud')?.updateValueAndValidity();
       this.registerForm.get('longitud')?.updateValueAndValidity();
 
-      // Cargar datos del usuario
+
       this.loadUserData();
     } else {
-      // En modo registro, el password es obligatorio
+
       this.registerForm.get('password')?.setValidators([Validators.required]);
       this.registerForm.get('password')?.updateValueAndValidity();
     }
@@ -78,9 +76,6 @@ export class RegistroComponent implements OnInit {
         telefono: user.telefono
       });
 
-      // Si el usuario tiene coordenadas guardadas, mostrarlas en el mapa
-      // Por ahora no tenemos coordenadas en el perfil de usuario
-      // pero podríamos agregarlas en el futuro
     });
   }
 
@@ -111,7 +106,6 @@ export class RegistroComponent implements OnInit {
         telefono: this.registerForm.value.telefono || ''
       };
 
-      // Si hay coordenadas seleccionadas, enviarlas
       if (this.selectedCoordinates) {
         payload.latitud = this.selectedCoordinates.lat;
         payload.longitud = this.selectedCoordinates.lng;
@@ -121,10 +115,8 @@ export class RegistroComponent implements OnInit {
         .subscribe({
           next: (response) => {
             console.log('Perfil actualizado correctamente', response);
-            // Actualizar el usuario en el servicio de autenticación
             this.authService.refreshUserData();
             alert('Perfil actualizado exitosamente');
-            // Redirigir al home
             this.router.navigate(['/']);
           },
           error: (err) => {
@@ -132,7 +124,6 @@ export class RegistroComponent implements OnInit {
             console.error('Status:', err.status);
             console.error('Error completo:', JSON.stringify(err, null, 2));
 
-            // Si la actualización fue exitosa (status 200) pero hay un problema de parsing
             if (err.status === 200 || err.status === 0) {
               console.log('Actualización exitosa a pesar del error de parsing');
               this.authService.refreshUserData();
@@ -164,9 +155,9 @@ export class RegistroComponent implements OnInit {
 
       this.authService.register(payload)
       .subscribe({
-        next: () => {
-          console.log('Registro exitoso');
-          alert('Usuario registrado exitosamente. Por favor inicia sesión.');
+        next: (response: any) => {
+          console.log('Registro exitoso:', response);
+          alert(response.mensaje || 'Usuario registrado exitosamente. Por favor inicia sesión.');
           this.router.navigate(['/login']);
         },
         error: (error: any) => {

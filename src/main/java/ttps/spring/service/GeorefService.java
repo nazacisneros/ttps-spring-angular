@@ -17,12 +17,6 @@ public class GeorefService {
         this.restTemplate = new RestTemplate();
     }
 
-    /**
-     * Obtiene la ubicación (ciudad/barrio) a partir de coordenadas
-     * @param lat Latitud
-     * @param lon Longitud
-     * @return UbicacionResponse con ciudad, barrio y provincia
-     */
     public UbicacionResponse obtenerUbicacion(Double lat, Double lon) {
         try {
             String url = UriComponentsBuilder.fromHttpUrl(GEOREF_API_URL)
@@ -30,23 +24,13 @@ public class GeorefService {
                     .queryParam("lon", lon)
                     .toUriString();
 
-            System.out.println("DEBUG - Llamando a Georef API: " + url);
-
             GeorefApiResponse response = restTemplate.getForObject(url, GeorefApiResponse.class);
-
-            System.out.println("DEBUG - Respuesta RAW de Georef API:");
-            System.out.println("  response: " + response);
 
             if (response != null) {
                 System.out.println("  response.getUbicacion(): " + response.getUbicacion());
 
                 if (response.getUbicacion() != null) {
                     GeorefUbicacion ubi = response.getUbicacion();
-                    System.out.println("  Ubicacion completa:");
-                    System.out.println("    - Provincia: " + ubi.getProvincia());
-                    System.out.println("    - Departamento: " + ubi.getDepartamento());
-                    System.out.println("    - Municipio: " + ubi.getMunicipio());
-                    System.out.println("    - LocalidadCensal: " + ubi.getLocalidadCensal());
 
                     if (ubi.getProvincia() != null) {
                         System.out.println("      Provincia.nombre: " + ubi.getProvincia().getNombre());
@@ -62,19 +46,13 @@ public class GeorefService {
                     }
 
                     UbicacionResponse ubicacion = convertirAUbicacion(response.getUbicacion());
-                    System.out.println("  Resultado de conversión:");
-                    System.out.println("    Ciudad: " + ubicacion.getCiudad());
-                    System.out.println("    Barrio: " + ubicacion.getBarrio());
-                    System.out.println("    Provincia: " + ubicacion.getProvincia());
                     return ubicacion;
                 }
             }
 
-            System.out.println("WARNING - Georef API no devolvió ubicación");
             return null;
 
         } catch (Exception e) {
-            System.err.println("ERROR - Error al llamar a Georef API: " + e.getMessage());
             e.printStackTrace();
             return null;
         }
@@ -83,45 +61,35 @@ public class GeorefService {
     private UbicacionResponse convertirAUbicacion(GeorefUbicacion ubicacion) {
         UbicacionResponse response = new UbicacionResponse();
 
-        System.out.println("DEBUG - Convirtiendo ubicación a DTO:");
-
-        // Ciudad (puede venir de municipio o localidad_censal)
-        if (ubicacion.getMunicipio() != null && ubicacion.getMunicipio().getNombre() != null) {
-            String ciudadNombre = ubicacion.getMunicipio().getNombre();
-            System.out.println("  Asignando ciudad desde Municipio: " + ciudadNombre);
-            response.setCiudad(ciudadNombre);
-        } else if (ubicacion.getLocalidadCensal() != null && ubicacion.getLocalidadCensal().getNombre() != null) {
-            String ciudadNombre = ubicacion.getLocalidadCensal().getNombre();
-            System.out.println("  Asignando ciudad desde LocalidadCensal: " + ciudadNombre);
-            response.setCiudad(ciudadNombre);
-        } else {
-            System.out.println("  WARNING - No se pudo obtener nombre de ciudad (Municipio y LocalidadCensal son null)");
+        String provinciaNombre = null;
+        if (ubicacion.getProvincia() != null && ubicacion.getProvincia().getNombre() != null) {
+            provinciaNombre = ubicacion.getProvincia().getNombre();
+            System.out.println("  Provincia: " + provinciaNombre);
+            response.setProvincia(provinciaNombre);
         }
 
-        // Barrio (puede venir de departamento o comuna)
+        if (ubicacion.getMunicipio() != null && ubicacion.getMunicipio().getNombre() != null
+                && provinciaNombre != null) {
+            String ciudadBase = ubicacion.getMunicipio().getNombre();
+            String ciudadNombreUnico = ciudadBase + ", " + provinciaNombre;
+            response.setCiudad(ciudadNombreUnico);
+        } else if (ubicacion.getLocalidadCensal() != null && ubicacion.getLocalidadCensal().getNombre() != null
+                && provinciaNombre != null) {
+            String ciudadBase = ubicacion.getLocalidadCensal().getNombre();
+            String ciudadNombreUnico = ciudadBase + ", " + provinciaNombre;
+            response.setCiudad(ciudadNombreUnico);
+        } else {
+            System.out.println(
+                    "  WARNING - No se pudo obtener nombre de ciudad (Municipio/LocalidadCensal o Provincia son null)");
+        }
+
         if (ubicacion.getDepartamento() != null && ubicacion.getDepartamento().getNombre() != null) {
             String barrioNombre = ubicacion.getDepartamento().getNombre();
-            System.out.println("  Asignando barrio desde Departamento: " + barrioNombre);
             response.setBarrio(barrioNombre);
         } else {
             System.out.println("  WARNING - No se pudo obtener nombre de barrio (Departamento es null)");
         }
 
-        // Provincia
-        if (ubicacion.getProvincia() != null && ubicacion.getProvincia().getNombre() != null) {
-            String provinciaNombre = ubicacion.getProvincia().getNombre();
-            System.out.println("  Asignando provincia: " + provinciaNombre);
-            response.setProvincia(provinciaNombre);
-        } else {
-            System.out.println("  WARNING - No se pudo obtener nombre de provincia");
-        }
-
-        System.out.println("DEBUG - DTO final:");
-        System.out.println("  response.getCiudad(): " + response.getCiudad());
-        System.out.println("  response.getBarrio(): " + response.getBarrio());
-        System.out.println("  response.getProvincia(): " + response.getProvincia());
-
         return response;
     }
 }
-

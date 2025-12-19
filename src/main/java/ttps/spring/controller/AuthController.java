@@ -41,10 +41,14 @@ class AuthController {
     }
 
     @PostMapping("/registro")
-    public ResponseEntity<?> registrar(@RequestBody RegistroRequest request) {
+    public ResponseEntity<Map<String, Object>> registrar(@RequestBody RegistroRequest request) {
         try {
             Usuario usuario = usuarioService.registrar(request);
-            return ResponseEntity.created(URI.create("/api/usuarios/" + usuario.getId())).body(usuario);
+            return ResponseEntity.created(URI.create("/api/usuarios/" + usuario.getId()))
+                    .body(Map.of(
+                            "id", usuario.getId(),
+                            "mensaje", "Usuario registrado exitosamente",
+                            "email", usuario.getEmail()));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         } catch (Exception e) {
@@ -53,25 +57,28 @@ class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        try {
+            Usuario usuario = usuarioService.login(request);
+            UserDetails userDetails = org.springframework.security.core.userdetails.User
+                    .withUsername(usuario.getEmail())
+                    .password(usuario.getContrasenia())
+                    .authorities(usuario.isEsAdmin() ? "ROLE_ADMIN" : "ROLE_USER")
+                    .build();
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getContrasenia()));
+            String token = jwtUtil.generateToken(userDetails);
 
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        Usuario usuario = usuarioService.buscarPorEmail(userDetails.getUsername())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            return ResponseEntity.ok(new LoginResponse(usuario.getId(),
+                    usuario.getNombre(),
+                    usuario.getApellido(),
+                    usuario.getEmail(),
+                    usuario.isEsAdmin(),
+                    token));
 
-        String token = jwtUtil.generateToken(userDetails);
-
-        return ResponseEntity.ok(new LoginResponse(usuario.getId(),
-                usuario.getNombre(),
-                usuario.getApellido(),
-                usuario.getEmail(),
-                usuario.isEsAdmin(),
-                token));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", e.getMessage()));
+        }
     }
 
     @GetMapping("/me")
@@ -108,7 +115,6 @@ class AuthController {
         return ResponseEntity.ok(new UsuarioResponse(actualizado));
     }
 
-    // Exception Handlers
     @ExceptionHandler(CredencialesInvalidasException.class)
     public ResponseEntity<ErrorResponse> handleCredencialesInvalidasException(CredencialesInvalidasException ex) {
         ErrorResponse error = new ErrorResponse(

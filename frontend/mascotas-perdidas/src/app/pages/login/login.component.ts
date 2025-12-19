@@ -40,7 +40,10 @@ export class LoginComponent {
         },
         error: (error: any) => {
           console.error('Error en login:', error);
-          if (error.error && typeof error.error === 'string') {
+
+          if (error.error && typeof error.error === 'object' && error.error.message) {
+            this.loginError = error.error.message;
+          } else if (error.error && typeof error.error === 'string') {
             this.loginError = error.error;
           } else if (error.message) {
             this.loginError = error.message;
