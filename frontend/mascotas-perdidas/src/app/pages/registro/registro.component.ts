@@ -20,13 +20,11 @@ export class RegistroComponent implements OnInit {
 
   registerForm!: FormGroup;
 
-  // Coordenadas del mapa
   selectedCoordinates: {lat: number, lng: number} | null = null;
-  mapCenterLat: number = -34.6037; // Buenos Aires por defecto
+  mapCenterLat: number = -34.6037; 
   mapCenterLng: number = -58.3816;
   mapZoom: number = 12;
 
-  // Mensaje de error del servidor
   serverError: string = '';
 
   constructor(
