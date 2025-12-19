@@ -9,12 +9,6 @@ export class MascotaService {
 
   constructor(private http: HttpClient) {}
 
-  // crea solo la mascota
-  crearMascota(data: any) {
-    return this.http.post(this.api, data);
-  }
-
-  // crea la publicacion junto con la mascota
   crearPublicacionMascota(data: any) {
     const now = new Date();
     const publicacionData = {
@@ -33,12 +27,7 @@ export class MascotaService {
       fecha: now.toISOString().split('T')[0],
       hora: now.toISOString()
     };
-
     return this.http.post(`${this.publicacionesApi}/con-mascota`, publicacionData);
-  }
-
-  obtenerPublicaciones() {
-    return this.http.get(this.publicacionesApi);
   }
 
   obtenerPublicacionesFiltradas(filtros: any) {
@@ -58,10 +47,6 @@ export class MascotaService {
 
     const url = `${this.publicacionesApi}/filtradas?${params.toString()}`;
     return this.http.get(url);
-  }
-
-  eliminarMascota(mascotaId: number, usuarioId: number) {
-    return this.http.delete(`${this.api}/${mascotaId}/usuario/${usuarioId}`);
   }
 
   eliminarPublicacion(publicacionId: number, usuarioId: number) {

@@ -25,7 +25,6 @@ public class TestGeorefController {
     public ResponseEntity<UbicacionResponse> probarGeoref(
             @RequestParam Double lat,
             @RequestParam Double lon) {
-        System.out.println("DEBUG - Test Georef llamado con lat=" + lat + ", lon=" + lon);
         UbicacionResponse ubicacion = georefService.obtenerUbicacion(lat, lon);
 
         if (ubicacion == null) {

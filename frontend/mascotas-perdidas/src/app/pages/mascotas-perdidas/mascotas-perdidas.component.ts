@@ -36,8 +36,7 @@ export class MascotasPerdidasComponent implements OnInit {
   selectedPublicacion?: Publicacion;
   viewMode: 'list' | 'map' = 'list';
   isLoading = false;
-
-  // Propiedades del Mapa
+  //inicio de punto de visualización del mapa con su respectivo acercamiento
   mapCenterLat: number = -34.6037;
   mapCenterLng: number = -58.3816;
   mapZoom: number = 12;
@@ -115,13 +114,6 @@ export class MascotasPerdidasComponent implements OnInit {
     return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
   }
 
-  getMarkerCoordinates(publicacion: Publicacion): { lat: number, lng: number } {
-    return {
-      lat: parseFloat(publicacion.latitud),
-      lng: parseFloat(publicacion.longitud)
-    };
-  }
-
   isOwner(publicacion: Publicacion): boolean {
     const user = this.authService.getUser();
     return user !== null && user.id === publicacion.usuarioId;
@@ -142,7 +134,7 @@ export class MascotasPerdidasComponent implements OnInit {
       return;
     }
 
-    // Eliminamos la PUBLICACIÓN, no solo la mascota
+    //y eliminar en cascada con publicación
     this.mascotaService.eliminarPublicacion(publicacion.id, user.id).subscribe({
       next: () => {
         alert('Publicación eliminada exitosamente');

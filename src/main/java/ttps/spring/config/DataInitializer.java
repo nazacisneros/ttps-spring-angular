@@ -11,9 +11,7 @@ import ttps.spring.repository.CiudadRepository;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
-
     // Seeds mock para pruebas
-
     private final CiudadRepository ciudadRepository;
     private final BarrioRepository barrioRepository;
 

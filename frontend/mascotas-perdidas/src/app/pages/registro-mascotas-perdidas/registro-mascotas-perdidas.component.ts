@@ -16,13 +16,9 @@ import { COLORES_MASCOTA, TAMANIOS_MASCOTA, ESTADOS_MASCOTA } from '../../consta
 export class RegistroMascotasPerdidasComponent implements OnInit {
 
   mascotaForm: FormGroup;
-
-  // Modo edición
   editMode: boolean = false;
   publicacionId: number | null = null;
   mascotaId: number | null = null;
-
-  // Coordenadas
   selectedCoordinates: {lat: number, lng: number} | null = null;
   mapCenterLat: number = -34.6037; // Buenos Aires por defecto
   mapCenterLng: number = -58.3816;
@@ -68,7 +64,6 @@ export class RegistroMascotasPerdidasComponent implements OnInit {
       next: (data: any) => {
         console.log('Datos de publicación recibidos del backend:', data);
 
-        // Validar que tengamos los datos necesarios
         if (!data) {
           console.error('No se recibieron datos de la publicación');
           alert('Error: No se recibieron datos de la publicación');
@@ -76,11 +71,10 @@ export class RegistroMascotasPerdidasComponent implements OnInit {
           return;
         }
 
-        // Guardar IDs
         this.mascotaId = data.mascotaId;
         console.log('Mascota ID guardado:', this.mascotaId);
 
-        // Rellenar el formulario (sin ciudad y barrio ya que Georef los detecta automáticamente)
+        //georef detecta coordenadas automaticamente
         const formData = {
           nombre: data.nombreMascota,
           tamanio: data.tamanioMascota,
@@ -94,7 +88,7 @@ export class RegistroMascotasPerdidasComponent implements OnInit {
         console.log('Datos para rellenar formulario:', formData);
         this.mascotaForm.patchValue(formData);
 
-        // Configurar coordenadas del mapa
+        //coordenadas del mapa
         if (data.latitud && data.longitud) {
           this.selectedCoordinates = {
             lat: parseFloat(data.latitud),
@@ -178,7 +172,7 @@ export class RegistroMascotasPerdidasComponent implements OnInit {
           }
         });
     } else {
-      // Modo creación - crear nueva publicación
+      //creación
       this.mascotaService.crearPublicacionMascota(this.mascotaForm.value)
         .subscribe({
           next: () => {
