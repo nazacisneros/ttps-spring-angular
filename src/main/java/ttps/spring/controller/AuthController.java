@@ -49,25 +49,28 @@ class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        try {
+            Usuario usuario = usuarioService.login(request);
+            UserDetails userDetails = org.springframework.security.core.userdetails.User
+                    .withUsername(usuario.getEmail())
+                    .password(usuario.getContrasenia())
+                    .authorities(usuario.isEsAdmin() ? "ROLE_ADMIN" : "ROLE_USER")
+                    .build();
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getContrasenia()));
+            String token = jwtUtil.generateToken(userDetails);
 
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        Usuario usuario = usuarioService.buscarPorEmail(userDetails.getUsername())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            return ResponseEntity.ok(new LoginResponse(usuario.getId(),
+                    usuario.getNombre(),
+                    usuario.getApellido(),
+                    usuario.getEmail(),
+                    usuario.isEsAdmin(),
+                    token));
 
-        String token = jwtUtil.generateToken(userDetails);
-
-        return ResponseEntity.ok(new LoginResponse(usuario.getId(),
-                usuario.getNombre(),
-                usuario.getApellido(),
-                usuario.getEmail(),
-                usuario.isEsAdmin(),
-                token));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", e.getMessage()));
+        }
     }
 
     @GetMapping("/me")
