@@ -4,17 +4,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import ttps.spring.entity.*;
+import ttps.spring.repository.BarrioRepository;
+import ttps.spring.repository.CiudadRepository;
 import ttps.spring.service.GenericService;
 import ttps.spring.service.PublicacionService;
 import ttps.spring.service.MascotaService;
 import ttps.spring.service.BarrioService;
 import ttps.spring.service.UsuarioService;
+import ttps.spring.service.GeorefService;
 import ttps.spring.dto.*;
 
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -25,13 +29,21 @@ public class PublicacionController extends GenericController<Publicacion, Long> 
         private final MascotaService mascotaService;
         private final BarrioService barrioService;
         private final UsuarioService usuarioService;
+        private final GeorefService georefService;
+        private final CiudadRepository ciudadRepository;
+        private final BarrioRepository barrioRepository;
 
         public PublicacionController(PublicacionService service, MascotaService mascotaService,
-                        BarrioService barrioService, UsuarioService usuarioService) {
+                        BarrioService barrioService, UsuarioService usuarioService,
+                        GeorefService georefService, CiudadRepository ciudadRepository,
+                        BarrioRepository barrioRepository) {
                 this.publicacionService = service;
                 this.mascotaService = mascotaService;
                 this.barrioService = barrioService;
                 this.usuarioService = usuarioService;
+                this.georefService = georefService;
+                this.ciudadRepository = ciudadRepository;
+                this.barrioRepository = barrioRepository;
         }
 
         @Override
@@ -188,6 +200,59 @@ public class PublicacionController extends GenericController<Publicacion, Long> 
                                         request.getMascota().getDescripcion(),
                                         request.getMascota().getEstado());
 
+                        // 🆕 OBTENER CIUDAD Y BARRIO DESDE GEOREF API
+                        Ciudad ciudad = null;
+                        Barrio barrio = null;
+
+                        if (request.getCoordenadas() != null) {
+
+                            System.out.println("DEBUG - Obteniendo ubicación desde Georef API");
+                            System.out.println("  Coordenadas: lat=" + request.getCoordenadas().getLatitud() +
+                                             ", lng=" + request.getCoordenadas().getLongitud());
+
+                            UbicacionResponse ubicacion = georefService.obtenerUbicacion(
+                                    request.getCoordenadas().getLatitud(),
+                                    request.getCoordenadas().getLongitud()
+                            );
+
+                            if (ubicacion != null) {
+                                System.out.println("DEBUG - Respuesta de Georef:");
+                                System.out.println("  Ciudad obtenida: " + ubicacion.getCiudad());
+                                System.out.println("  Barrio obtenido: " + ubicacion.getBarrio());
+                                System.out.println("  Provincia obtenida: " + ubicacion.getProvincia());
+
+                                if (ubicacion.getCiudad() != null) {
+                                    // Buscar o crear Ciudad
+                                    ciudad = buscarOCrearCiudad(ubicacion.getCiudad());
+                                    System.out.println("DEBUG - Ciudad guardada en BD: " + ciudad.getNombre() + " (ID: " + ciudad.getId() + ")");
+
+                                    // Buscar o crear Barrio
+                                    if (ubicacion.getBarrio() != null) {
+                                        barrio = buscarOCrearBarrio(ubicacion.getBarrio(), ciudad);
+                                        System.out.println("DEBUG - Barrio guardado en BD: " + barrio.getNombre() + " (ID: " + barrio.getId() + ")");
+                                    }
+                                }
+                            } else {
+                                System.out.println("WARNING - No se pudo obtener ubicación desde Georef, usando barrio del request");
+                                // Fallback: usar barrioId del request si viene
+                                if (request.getBarrioId() != null) {
+                                    barrio = barrioService.obtener(request.getBarrioId())
+                                            .orElse(null);
+                                    if (barrio != null && barrio.getCiudad() != null) {
+                                        ciudad = barrio.getCiudad();
+                                    }
+                                }
+                            }
+                        }
+
+                        // Asignar ciudad y barrio a la mascota
+                        if (ciudad != null) {
+                            mascota.setCiudad(ciudad);
+                        }
+                        if (barrio != null) {
+                            mascota.setBarrio(barrio);
+                        }
+
                         // Usar el método específico crearMascota que garantiza la asignación del usuario
                         Mascota savedMascota = mascotaService.crearMascota(usuario.getId(), mascota);
 
@@ -212,6 +277,55 @@ public class PublicacionController extends GenericController<Publicacion, Long> 
 
                 } catch (Exception e) {
                         throw new RuntimeException("Error creating publication with pet: " + e.getMessage());
+                }
+        }
+
+        // Método auxiliar para buscar o crear Ciudad
+        private Ciudad buscarOCrearCiudad(String nombreCiudad) {
+                System.out.println("DEBUG - buscarOCrearCiudad llamado con: '" + nombreCiudad + "'");
+
+                Optional<Ciudad> ciudadExistente = ciudadRepository.findByNombre(nombreCiudad);
+
+                if (ciudadExistente.isPresent()) {
+                        System.out.println("DEBUG - Ciudad ya existe en BD: " + ciudadExistente.get().getNombre() + " (ID: " + ciudadExistente.get().getId() + ")");
+                        return ciudadExistente.get();
+                } else {
+                        System.out.println("DEBUG - Creando nueva ciudad: '" + nombreCiudad + "'");
+                        Ciudad ciudad = new Ciudad();
+                        ciudad.setNombre(nombreCiudad);
+                        Ciudad guardada = ciudadRepository.save(ciudad);
+                        System.out.println("DEBUG - Ciudad guardada: '" + guardada.getNombre() + "' (ID: " + guardada.getId() + ")");
+                        return guardada;
+                }
+        }
+
+        // Método auxiliar para buscar o crear Barrio
+        private Barrio buscarOCrearBarrio(String nombreBarrio, Ciudad ciudad) {
+                System.out.println("DEBUG - buscarOCrearBarrio llamado con:");
+                System.out.println("  nombreBarrio: '" + nombreBarrio + "'");
+                System.out.println("  ciudad: '" + ciudad.getNombre() + "' (ID: " + ciudad.getId() + ")");
+
+                Optional<Barrio> barrioExistente = barrioRepository.findByNombreAndCiudad(nombreBarrio, ciudad);
+
+                if (barrioExistente.isPresent()) {
+                        System.out.println("DEBUG - Barrio ya existe en BD: " + barrioExistente.get().getNombre() + " (ID: " + barrioExistente.get().getId() + ")");
+                        return barrioExistente.get();
+                } else {
+                        System.out.println("DEBUG - Creando nuevo barrio: '" + nombreBarrio + "'");
+                        Barrio barrio = new Barrio();
+                        barrio.setNombre(nombreBarrio);
+                        barrio.setCiudad(ciudad);
+                        Barrio guardado = barrioRepository.save(barrio);
+                        System.out.println("DEBUG - Barrio guardado: '" + guardado.getNombre() + "' (ID: " + guardado.getId() + ")");
+
+                        // Verificar que la ciudad no se haya modificado
+                        System.out.println("DEBUG - Verificando que ciudad siga siendo: '" + ciudad.getNombre() + "' (ID: " + ciudad.getId() + ")");
+                        Ciudad ciudadVerificada = ciudadRepository.findById(ciudad.getId()).orElse(null);
+                        if (ciudadVerificada != null) {
+                                System.out.println("DEBUG - Ciudad en BD después de guardar barrio: '" + ciudadVerificada.getNombre() + "'");
+                        }
+
+                        return guardado;
                 }
         }
 

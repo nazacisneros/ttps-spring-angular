@@ -3,8 +3,6 @@ import { FormBuilder, Validators, ReactiveFormsModule, FormGroup } from '@angula
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MascotaService } from '../../services/mascota.service';
-import { CiudadService, Ciudad } from '../../services/ciudad.service';
-import { BarrioService, Barrio } from '../../services/barrio.service';
 import { MapaMascotasComponent } from '../../components/mapa-mascotas/mapa-mascotas.component';
 import { COLORES_MASCOTA, TAMANIOS_MASCOTA, ESTADOS_MASCOTA } from '../../constants/mascota.constants';
 
@@ -18,8 +16,6 @@ import { COLORES_MASCOTA, TAMANIOS_MASCOTA, ESTADOS_MASCOTA } from '../../consta
 export class RegistroMascotasPerdidasComponent implements OnInit {
 
   mascotaForm: FormGroup;
-  ciudades: Ciudad[] = [];
-  barrios: Barrio[] = [];
 
   // Modo edición
   editMode: boolean = false;
@@ -28,10 +24,9 @@ export class RegistroMascotasPerdidasComponent implements OnInit {
 
   // Coordenadas
   selectedCoordinates: {lat: number, lng: number} | null = null;
-  mapCenterLat: number = -34.6037; // Buenos Aires
+  mapCenterLat: number = -34.6037; // Buenos Aires por defecto
   mapCenterLng: number = -58.3816;
   mapZoom: number = 12;
-  showMap: boolean = false;
 
   tamanios = TAMANIOS_MASCOTA;
   colores = COLORES_MASCOTA;
@@ -40,8 +35,6 @@ export class RegistroMascotasPerdidasComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private mascotaService: MascotaService,
-    private ciudadService: CiudadService,
-    private barrioService: BarrioService,
     private router: Router,
     private route: ActivatedRoute
   ) {
@@ -51,15 +44,12 @@ export class RegistroMascotasPerdidasComponent implements OnInit {
       color: ['', Validators.required],
       descripcion: ['', Validators.required],
       estado: ['', Validators.required],
-      ciudad: ['', Validators.required],
-      barrio: ['', Validators.required],
       latitud: ['', Validators.required],
       longitud: ['', Validators.required],
     });
   }
 
   ngOnInit() {
-    this.loadCiudades();
 
     // Detectar si estamos en modo edición
     this.route.params.subscribe(params => {
@@ -71,20 +61,12 @@ export class RegistroMascotasPerdidasComponent implements OnInit {
     });
   }
 
-  loadCiudades() {
-    this.ciudadService.getCiudades().subscribe(ciudades => {
-      this.ciudades = ciudades;
-    });
-  }
-
   loadPublicacionData(publicacionId: number) {
     console.log('Cargando publicación con ID:', publicacionId);
 
     this.mascotaService.obtenerPublicacionPorId(publicacionId).subscribe({
       next: (data: any) => {
         console.log('Datos de publicación recibidos del backend:', data);
-        console.log('Tipo de data:', typeof data);
-        console.log('Keys de data:', data ? Object.keys(data) : 'data es null/undefined');
 
         // Validar que tengamos los datos necesarios
         if (!data) {
@@ -98,32 +80,13 @@ export class RegistroMascotasPerdidasComponent implements OnInit {
         this.mascotaId = data.mascotaId;
         console.log('Mascota ID guardado:', this.mascotaId);
 
-        // Cargar barrios de la ciudad
-        if (data.ciudadId) {
-          console.log('Cargando barrios de ciudad ID:', data.ciudadId);
-          this.barrioService.getBarriosByCiudad(data.ciudadId).subscribe({
-            next: (barrios) => {
-              console.log('Barrios cargados:', barrios);
-              this.barrios = barrios;
-              this.showMap = true;
-            },
-            error: (err) => {
-              console.error('Error cargando barrios:', err);
-            }
-          });
-        } else {
-          console.warn('No hay ciudadId en los datos');
-        }
-
-        // Rellenar el formulario
+        // Rellenar el formulario (sin ciudad y barrio ya que Georef los detecta automáticamente)
         const formData = {
           nombre: data.nombreMascota,
           tamanio: data.tamanioMascota,
           color: data.colorMascota,
           descripcion: data.descripcionMascota,
           estado: data.estadoMascota,
-          ciudad: data.ciudadId,
-          barrio: data.barrioId,
           latitud: data.latitud,
           longitud: data.longitud
         };
@@ -148,9 +111,6 @@ export class RegistroMascotasPerdidasComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error completo cargando datos de publicación:', error);
-        console.error('Status:', error.status);
-        console.error('Message:', error.message);
-        console.error('Error body:', error.error);
 
         let errorMsg = 'Error al cargar los datos de la mascota';
         if (error.status === 404) {
@@ -167,56 +127,18 @@ export class RegistroMascotasPerdidasComponent implements OnInit {
     });
   }
 
-  onCiudadChange(ciudadId: number) {
-    if (ciudadId) {
-      this.barrioService.getBarriosByCiudad(ciudadId).subscribe(barrios => {
-        this.barrios = barrios;
-        // Espera a que esten seleccionados ciudad y barrio para mostrar el mapa
-        this.checkShowMap();
-      });
-
-      // Cambia el foco del mapa dependiendo de la ciudad seleccionada
-      const selectedCiudad = this.ciudades.find(c => c.id === ciudadId);
-      if (selectedCiudad) {
-        // por ahora usa coordenadas default, falta implementar la api de ciudades
-        this.updateMapCenter(ciudadId);
-      }
-    } else {
-      this.barrios = [];
-      this.showMap = false;
-    }
-  }
-
-  onBarrioChange() {
-    this.checkShowMap();
-  }
-
-  private checkShowMap() {
-    const ciudadSeleccionada = this.mascotaForm.get('ciudad')?.value;
-    const barrioSeleccionado = this.mascotaForm.get('barrio')?.value;
-    this.showMap = !!(ciudadSeleccionada && barrioSeleccionado);
-  }
-
   onCoordinatesSelected(coordinates: {lat: number, lng: number}) {
     this.selectedCoordinates = coordinates;
     this.mascotaForm.patchValue({
       latitud: coordinates.lat,
       longitud: coordinates.lng
     });
+    console.log('Coordenadas seleccionadas:', coordinates);
   }
 
-  private updateMapCenter(ciudadId: number) {
-    // coordenadas de ejemplo para ciudades
-    const cityCoordinates: {[key: number]: {lat: number, lng: number}} = {
-      1: { lat: -34.6037, lng: -58.3816 }, // Buenos Aires
-      2: { lat: -31.4167, lng: -64.1833 }  // Córdoba
-    };
-
-    const coords = cityCoordinates[ciudadId];
-    if (coords) {
-      this.mapCenterLat = coords.lat;
-      this.mapCenterLng = coords.lng;
-      this.mapZoom = 13;
+  cancelar() {
+    if (confirm('¿Estás seguro de que deseas cancelar? Se perderán los cambios no guardados.')) {
+      this.router.navigate([this.editMode ? '/mascotas-perdidas' : '/']);
     }
   }
 

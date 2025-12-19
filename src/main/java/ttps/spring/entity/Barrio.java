@@ -8,7 +8,7 @@ public class Barrio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long barrio_id;
     private String nombre;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ciudad_id")
     private Ciudad ciudad;
 

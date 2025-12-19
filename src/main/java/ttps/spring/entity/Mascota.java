@@ -22,6 +22,12 @@ public class Mascota {
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
+    @ManyToOne
+    @JoinColumn(name = "ciudad_id")
+    private Ciudad ciudad;
+    @ManyToOne
+    @JoinColumn(name = "barrio_id")
+    private Barrio barrio;
 
     public Mascota() {
     }
@@ -110,6 +116,22 @@ public class Mascota {
 
     public String getEstado() {
         return this.estado;
+    }
+
+    public Ciudad getCiudad() {
+        return ciudad;
+    }
+
+    public void setCiudad(Ciudad ciudad) {
+        this.ciudad = ciudad;
+    }
+
+    public Barrio getBarrio() {
+        return barrio;
+    }
+
+    public void setBarrio(Barrio barrio) {
+        this.barrio = barrio;
     }
 
 }
