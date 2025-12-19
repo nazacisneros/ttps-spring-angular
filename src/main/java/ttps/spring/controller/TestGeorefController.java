@@ -46,8 +46,6 @@ public class TestGeorefController {
             request.setContrasenia("password123");
             request.setLatitud(-34.6037);
             request.setLongitud(-58.3816);
-
-            System.out.println("DEBUG - Probando registro completo con coordenadas");
             var usuario = usuarioService.registrar(request);
 
             return ResponseEntity.ok("Usuario registrado exitosamente: " + usuario.getNombre() +

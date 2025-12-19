@@ -56,14 +56,8 @@ public class UsuarioService extends GenericService<Usuario, Long> {
     }
 
     public Usuario registrar(RegistroRequest request) {
-        System.out.println("DEBUG - Iniciando registro de usuario");
-        System.out.println("DEBUG - Email: " + request.getEmail());
-        System.out.println("DEBUG - Latitud: " + request.getLatitud());
-        System.out.println("DEBUG - Longitud: " + request.getLongitud());
-        System.out.println("DEBUG - BarrioId: " + request.getBarrioId());
 
         if (buscarPorEmail(request.getEmail()).isPresent()) {
-            System.out.println("DEBUG - Email duplicado detectado: " + request.getEmail());
             throw new IllegalArgumentException(
                     "Ya existe una cuenta con este correo electrónico. Por favor, utiliza otro email o intenta iniciar sesión.");
         }
@@ -74,28 +68,21 @@ public class UsuarioService extends GenericService<Usuario, Long> {
         Barrio barrio = null;
 
         if (request.getLatitud() != null && request.getLongitud() != null) {
-            System.out.println("DEBUG - Registro con coordenadas - usando Georef");
-            System.out.println("  Coordenadas: lat=" + request.getLatitud() + ", lng=" + request.getLongitud());
 
             UbicacionResponse ubicacion = georefService.obtenerUbicacion(
                     request.getLatitud(),
                     request.getLongitud());
 
             if (ubicacion != null && ubicacion.getCiudad() != null) {
-                // Buscar o crear Ciudad con nombre único
                 Ciudad ciudad = buscarOCrearCiudad(ubicacion.getCiudad());
-                System.out.println("DEBUG - Ciudad asignada: " + ciudad.getNombre());
 
-                // Buscar o crear Barrio
                 if (ubicacion.getBarrio() != null) {
                     barrio = buscarOCrearBarrio(ubicacion.getBarrio(), ciudad);
-                    System.out.println("DEBUG - Barrio asignado: " + barrio.getNombre());
                 }
             } else {
                 System.out.println("WARNING - No se pudo obtener ubicación desde Georef");
             }
         } else if (request.getBarrioId() != null) {
-            System.out.println("DEBUG - Registro con barrioId (modo legacy)");
             barrio = barrioService.obtener(request.getBarrioId())
                     .orElseThrow(() -> new IllegalArgumentException("Barrio no encontrado"));
         }
@@ -118,24 +105,15 @@ public class UsuarioService extends GenericService<Usuario, Long> {
         try {
             Ciudad ciudad = ciudadRepository.findByNombre(nombreCiudad)
                     .orElseGet(() -> {
-                        System.out.println("DEBUG - Creando nueva ciudad: '" + nombreCiudad + "'");
-
                         Ciudad nuevaCiudad = new Ciudad();
                         nuevaCiudad.setNombre(nombreCiudad);
-
-                        System.out.println("DEBUG - Guardando ciudad...");
                         Ciudad guardada = ciudadRepository.save(nuevaCiudad);
-                        System.out.println("DEBUG - Ciudad guardada con ID: " + guardada.getId());
-
                         return guardada;
                     });
 
-            System.out.println(
-                    "DEBUG - Ciudad encontrada/usada: " + ciudad.getNombre() + " (ID: " + ciudad.getId() + ")");
             return ciudad;
 
         } catch (Exception e) {
-            System.err.println("ERROR - Error al buscar/crear ciudad '" + nombreCiudad + "': " + e.getMessage());
             e.printStackTrace();
             throw e;
         }
@@ -151,16 +129,10 @@ public class UsuarioService extends GenericService<Usuario, Long> {
                         Barrio nuevoBarrio = new Barrio();
                         nuevoBarrio.setNombre(nombreBarrio);
                         nuevoBarrio.setCiudad(ciudad);
-
-                        System.out.println("DEBUG - Guardando barrio...");
                         Barrio guardado = barrioRepository.save(nuevoBarrio);
-                        System.out.println("DEBUG - Barrio guardado con ID: " + guardado.getId());
-
                         return guardado;
                     });
 
-            System.out.println(
-                    "DEBUG - Barrio encontrado/usado: " + barrio.getNombre() + " (ID: " + barrio.getId() + ")");
             return barrio;
 
         } catch (Exception e) {
