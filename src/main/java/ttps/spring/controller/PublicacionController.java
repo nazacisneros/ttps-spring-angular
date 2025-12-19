@@ -1,9 +1,13 @@
 package ttps.spring.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import ttps.spring.entity.*;
+import ttps.spring.exception.publicacion.PublicacionNoEncontradaException;
+import ttps.spring.exception.publicacion.PublicacionValidationException;
+import ttps.spring.model.ErrorResponse;
 import ttps.spring.repository.BarrioRepository;
 import ttps.spring.repository.CiudadRepository;
 import ttps.spring.service.GenericService;
@@ -440,5 +444,26 @@ public class PublicacionController extends GenericController<Publicacion, Long> 
                         System.err.println("Error actualizando publicación: " + e.getMessage());
                         throw new RuntimeException("Error al actualizar la publicación: " + e.getMessage());
                 }
+        }
+
+        // Exception Handlers
+        @ExceptionHandler(PublicacionNoEncontradaException.class)
+        public ResponseEntity<ErrorResponse> handlePublicacionNoEncontradaException(
+                        PublicacionNoEncontradaException ex) {
+                ErrorResponse error = new ErrorResponse(
+                                HttpStatus.NOT_FOUND.value(),
+                                ex.getMessage(),
+                                System.currentTimeMillis());
+                return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        }
+
+        @ExceptionHandler(PublicacionValidationException.class)
+        public ResponseEntity<ErrorResponse> handlePublicacionValidationException(
+                        PublicacionValidationException ex) {
+                ErrorResponse error = new ErrorResponse(
+                                HttpStatus.BAD_REQUEST.value(),
+                                ex.getMessage(),
+                                System.currentTimeMillis());
+                return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
         }
 }

@@ -1,84 +1,137 @@
 <div class="registro-container">
-  <h2>{{ editMode ? 'Editar datos personales' : 'Registro de usuario' }}</h2>
+  <div class="form-header">
+    <h2>{{ editMode ? '✏️ Editar datos personales' : '📝 Registro de usuario' }}</h2>
+    <p class="subtitle">{{ editMode ? 'Actualiza tu información personal' : 'Completa tus datos y selecciona tu ubicación en el mapa' }}</p>
+  </div>
 
   <div *ngIf="serverError" class="server-error">
     {{ serverError }}
   </div>
 
   <form [formGroup]="registerForm" (ngSubmit)="submit()">
+    <div class="form-content">
+      <!-- Columna izquierda: Datos personales -->
+      <div class="form-column datos-column">
+        <h3 class="column-title">👤 Datos Personales</h3>
 
-    <div class="form-section">
-      <h3>Datos Personales</h3>
+        <div class="form-row">
+          <div class="form-group half-width">
+            <label for="nombre">Nombre *</label>
+            <input
+              id="nombre"
+              formControlName="nombre"
+              placeholder="Ej: Juan"
+              class="form-control">
+            <div *ngIf="registerForm.get('nombre')?.invalid && registerForm.get('nombre')?.touched" class="error-message">
+              <span *ngIf="registerForm.get('nombre')?.errors?.['required']">⚠️ Requerido</span>
+            </div>
+          </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="nombre">Nombre</label>
-          <input id="nombre" formControlName="nombre" placeholder="Ingrese su nombre">
-          <div *ngIf="registerForm.get('nombre')?.invalid && registerForm.get('nombre')?.touched" class="error">
-            <span *ngIf="registerForm.get('nombre')?.errors?.['required']">El nombre es obligatorio</span>
+          <div class="form-group half-width">
+            <label for="apellido">Apellido *</label>
+            <input
+              id="apellido"
+              formControlName="apellido"
+              placeholder="Ej: Pérez"
+              class="form-control">
+            <div *ngIf="registerForm.get('apellido')?.invalid && registerForm.get('apellido')?.touched" class="error-message">
+              <span *ngIf="registerForm.get('apellido')?.errors?.['required']">⚠️ Requerido</span>
+            </div>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="apellido">Apellido</label>
-          <input id="apellido" formControlName="apellido" placeholder="Ingrese su apellido">
-          <div *ngIf="registerForm.get('apellido')?.invalid && registerForm.get('apellido')?.touched" class="error">
-            <span *ngIf="registerForm.get('apellido')?.errors?.['required']">El apellido es obligatorio</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="email">Correo Electrónico</label>
-          <input id="email" formControlName="email" placeholder="correo@ejemplo.com" type="email" [attr.readonly]="editMode ? true : null">
-          <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="error">
-            <span *ngIf="registerForm.get('email')?.errors?.['required']">El email es obligatorio</span>
-            <span *ngIf="registerForm.get('email')?.errors?.['email']">Formato de email inválido</span>
+          <label for="email">Correo Electrónico *</label>
+          <input
+            id="email"
+            formControlName="email"
+            placeholder="correo@ejemplo.com"
+            type="email"
+            class="form-control"
+            [attr.readonly]="editMode ? true : null">
+          <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="error-message">
+            <span *ngIf="registerForm.get('email')?.errors?.['required']">⚠️ El email es obligatorio</span>
+            <span *ngIf="registerForm.get('email')?.errors?.['email']">⚠️ Formato de email inválido</span>
           </div>
           <div *ngIf="editMode" class="info-message">
-            <span>El email no puede ser modificado</span>
+            <span>ℹ️ El email no puede ser modificado</span>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="telefono">Teléfono</label>
-          <input id="telefono" formControlName="telefono" placeholder="Ingrese su teléfono">
+          <label for="telefono">Teléfono *</label>
+          <input
+            id="telefono"
+            formControlName="telefono"
+            placeholder="Ej: 11 1234-5678"
+            class="form-control">
+          <div *ngIf="registerForm.get('telefono')?.invalid && registerForm.get('telefono')?.touched" class="error-message">
+            <span *ngIf="registerForm.get('telefono')?.errors?.['required']">⚠️ El teléfono es obligatorio</span>
+          </div>
+        </div>
+
+        <div class="form-group" *ngIf="!editMode">
+          <label for="password">Contraseña *</label>
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            placeholder="Ingrese su contraseña"
+            class="form-control">
+          <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="error-message">
+            <span *ngIf="registerForm.get('password')?.errors?.['required']">⚠️ La contraseña es obligatoria</span>
+          </div>
         </div>
       </div>
 
-      <div class="form-group" *ngIf="!editMode">
-        <label for="password">Contraseña</label>
-        <input id="password" type="password" formControlName="password" placeholder="Ingrese su contraseña">
+      <!-- Columna derecha: Mapa -->
+      <div class="form-column map-column">
+        <h3 class="column-title">📍 Tu Ubicación</h3>
+        <div class="map-info-box">
+          <p class="map-instructions">
+            <strong>Instrucciones:</strong><br>
+            Haz clic en el mapa para marcar tu ubicación.
+            La ciudad y barrio se detectarán automáticamente.
+          </p>
+          <div *ngIf="selectedCoordinates" class="coordinates-display">
+            <div class="coordinate-item">
+              <span class="coord-label">Latitud:</span>
+              <span class="coord-value">{{ selectedCoordinates.lat | number:'1.4-4' }}</span>
+            </div>
+            <div class="coordinate-item">
+              <span class="coord-label">Longitud:</span>
+              <span class="coord-value">{{ selectedCoordinates.lng | number:'1.4-4' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="map-container">
+          <app-mapa-mascotas
+            [mode]="'select'"
+            [centerLat]="mapCenterLat"
+            [centerLng]="mapCenterLng"
+            [zoom]="mapZoom"
+            (coordinatesSelected)="onCoordinatesSelected($event)">
+          </app-mapa-mascotas>
+        </div>
+
+        <div *ngIf="!selectedCoordinates && (registerForm.get('latitud')?.touched || registerForm.get('longitud')?.touched)" class="error-message map-error">
+          ⚠️ Debes seleccionar tu ubicación en el mapa
+        </div>
       </div>
     </div>
 
-    <div class="form-section">
-      <h3>Ubicación</h3>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="ciudad">Ciudad</label>
-          <select id="ciudad" formControlName="ciudad" (change)="onCiudadChange(+$any($event.target).value)">
-            <option value="">Seleccione una ciudad</option>
-            <option *ngFor="let ciudad of ciudades" [value]="ciudad.id">{{ ciudad.nombre }}</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="barrio">Barrio</label>
-          <select id="barrio" formControlName="barrio">
-            <option value="">Seleccione un barrio</option>
-            <option *ngFor="let barrio of barrios" [value]="barrio.id">{{ barrio.nombre }}</option>
-          </select>
-        </div>
-      </div>
+    <!-- Botón de envío -->
+    <div class="form-actions">
+      <button type="submit" [disabled]="registerForm.invalid" class="btn-submit">
+        <span class="btn-icon">{{ editMode ? '💾' : '✅' }}</span>
+        {{ editMode ? 'Guardar cambios' : 'Registrarse' }}
+      </button>
+      <button type="button" class="btn-cancel" (click)="cancelar()">
+        <span class="btn-icon">❌</span>
+        Cancelar
+      </button>
     </div>
-
-    <button type="submit" [disabled]="registerForm.invalid">
-      {{ editMode ? 'Guardar cambios' : 'Registrarse' }}
-    </button>
-
   </form>
 
   <p *ngIf="!editMode" class="login-link">
