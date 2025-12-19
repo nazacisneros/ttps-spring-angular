@@ -3,14 +3,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 2rem;
+  padding: 1rem 2.5rem;
   background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%);
   backdrop-filter: blur(10px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   position: sticky;
   top: 0;
   z-index: 1000;
-  gap: 1.5rem;
+  gap: 2rem;
   flex-wrap: wrap;
   animation: slideDown 0.5s ease-out;
 }
@@ -207,19 +207,6 @@ ng-container {
   }
 }
 
-/* Efecto de pulso para enlaces importantes */
-a[routerLink="/reportar-avistamiento"] {
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 0 8px rgba(255, 255, 255, 0);
-  }
-}
 
 
 /* Separador visual entre secciones */
