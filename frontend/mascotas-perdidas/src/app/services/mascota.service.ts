@@ -30,8 +30,8 @@ export class MascotaService {
         latitud: data.latitud,
         longitud: data.longitud
       },
-      fecha: now.toISOString().split('T')[0], 
-      hora: now.toISOString(), 
+      fecha: now.toISOString().split('T')[0],
+      hora: now.toISOString(),
       estado: data.estado
     };
 
@@ -59,5 +59,13 @@ export class MascotaService {
 
     const url = `${this.publicacionesApi}/filtradas?${params.toString()}`;
     return this.http.get(url);
+  }
+
+  eliminarMascota(mascotaId: number, usuarioId: number) {
+    return this.http.delete(`${this.api}/${mascotaId}/usuario/${usuarioId}`);
+  }
+
+  eliminarPublicacion(publicacionId: number, usuarioId: number) {
+    return this.http.delete(`${this.publicacionesApi}/${publicacionId}/usuario/${usuarioId}`);
   }
 }

@@ -169,6 +169,28 @@
   background: #5a6268;
 }
 
+.btn-eliminar {
+  background: linear-gradient(135deg, #ff4757 0%, #c44569 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(255, 71, 87, 0.3);
+}
+
+.btn-eliminar:hover {
+  background: linear-gradient(135deg, #e84118 0%, #b33771 100%);
+  box-shadow: 0 4px 12px rgba(255, 71, 87, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-eliminar:active {
+  transform: translateY(0);
+}
+
 
 .map-view {
   margin-top: 2rem;

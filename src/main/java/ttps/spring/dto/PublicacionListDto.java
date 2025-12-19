@@ -15,10 +15,13 @@ public class PublicacionListDto {
     private String estadoMascota;
     private String latitud;
     private String longitud;
+    private Long mascotaId;
+    private Long usuarioId;
 
     public PublicacionListDto(Long id, LocalDate fecha, LocalDateTime hora, String estado,
             String nombreMascota, String tamanioMascota, String colorMascota,
-            String descripcionMascota, String estadoMascota, String latitud, String longitud) {
+            String descripcionMascota, String estadoMascota, String latitud, String longitud,
+            Long mascotaId, Long usuarioId) {
         this.id = id;
         this.fecha = fecha;
         this.hora = hora;
@@ -30,6 +33,8 @@ public class PublicacionListDto {
         this.estadoMascota = estadoMascota;
         this.latitud = latitud;
         this.longitud = longitud;
+        this.mascotaId = mascotaId;
+        this.usuarioId = usuarioId;
     }
 
     public Long getId() {
@@ -118,5 +123,21 @@ public class PublicacionListDto {
 
     public void setLongitud(String longitud) {
         this.longitud = longitud;
+    }
+
+    public Long getMascotaId() {
+        return mascotaId;
+    }
+
+    public void setMascotaId(Long mascotaId) {
+        this.mascotaId = mascotaId;
+    }
+
+    public Long getUsuarioId() {
+        return usuarioId;
+    }
+
+    public void setUsuarioId(Long usuarioId) {
+        this.usuarioId = usuarioId;
     }
 }

@@ -109,7 +109,9 @@ public class PublicacionController extends GenericController<Publicacion, Long> 
                                 publicacion.getMascota().getDescripcion(),
                                 publicacion.getMascota().getEstado(),
                                 publicacion.getCoordenada().getLatitud(),
-                                publicacion.getCoordenada().getLongitud());
+                                publicacion.getCoordenada().getLongitud(),
+                                publicacion.getMascota().getId(),
+                                publicacion.getMascota().getUsuario() != null ? publicacion.getMascota().getUsuario().getId() : null);
         }
 
         @Override
@@ -142,9 +144,8 @@ public class PublicacionController extends GenericController<Publicacion, Long> 
                                         request.getMascota().getDescripcion(),
                                         request.getMascota().getEstado());
 
-                        mascota.setUsuario(usuario);
-
-                        Mascota savedMascota = mascotaService.crear(mascota);
+                        // Usar el método específico crearMascota que garantiza la asignación del usuario
+                        Mascota savedMascota = mascotaService.crearMascota(usuario.getId(), mascota);
 
                         String horaSinZ = request.getHora().replace("Z", "");
                         LocalDateTime fechaHora = LocalDateTime.parse(horaSinZ);
@@ -168,5 +169,50 @@ public class PublicacionController extends GenericController<Publicacion, Long> 
                 } catch (Exception e) {
                         throw new RuntimeException("Error creating publication with pet: " + e.getMessage());
                 }
+        }
+
+        @DeleteMapping("/{id}/usuario/{usuarioId}")
+        public ResponseEntity<Void> eliminarPublicacion(@PathVariable Long id, @PathVariable Long usuarioId,
+                        Authentication authentication) {
+                System.out.println("DEBUG Controller - Eliminar publicación:");
+                System.out.println("  PathVariable id (publicacionId): " + id);
+                System.out.println("  PathVariable usuarioId: " + usuarioId);
+                System.out.println("  Authentication.getName(): " + authentication.getName());
+
+                // Obtener el email del usuario autenticado desde el token JWT
+                String email = authentication.getName();
+                Usuario usuarioAutenticado = usuarioService.buscarPorEmail(email)
+                                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+                System.out.println("  Usuario autenticado ID: " + usuarioAutenticado.getId());
+
+                // Obtener la publicación
+                Publicacion publicacion = publicacionService.obtener(id)
+                                .orElseThrow(() -> new RuntimeException("Publicación no encontrada"));
+
+                System.out.println("  Publicacion encontrada, estado: " + publicacion.getEstado());
+                System.out.println("  Usuario publicador: " + publicacion.getUsuario_publicador());
+
+                // Validar que el usuario autenticado sea el publicador
+                if (publicacion.getUsuario_publicador() == null) {
+                        throw new RuntimeException("La publicación no tiene usuario publicador asignado");
+                }
+
+                System.out.println("  ID del publicador: " + publicacion.getUsuario_publicador().getId());
+
+                if (!publicacion.getUsuario_publicador().getId().equals(usuarioAutenticado.getId())) {
+                        throw new RuntimeException("No tienes permiso para eliminar esta publicación. " +
+                                        "Publicador: " + publicacion.getUsuario_publicador().getId() +
+                                        ", Solicitante: " + usuarioAutenticado.getId());
+                }
+
+                System.out.println("  Validación OK - Eliminando publicación");
+
+                // Eliminar la publicación
+                publicacionService.eliminar(id);
+
+                System.out.println("  Publicación eliminada exitosamente");
+
+                return ResponseEntity.noContent().build();
         }
 }

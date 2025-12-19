@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MascotaService } from '../../services/mascota.service';
+import { AuthService } from '../../services/auth.service';
 import { FiltroMascotasComponent } from '../../components/filtro-mascotas/filtro-mascotas.component';
 import { MapaMascotasComponent } from '../../components/mapa-mascotas/mapa-mascotas.component';
 
@@ -16,6 +17,8 @@ interface Publicacion {
   estadoMascota: string;
   latitud: string;
   longitud: string;
+  mascotaId: number;
+  usuarioId: number;
 }
 
 @Component({
@@ -38,7 +41,10 @@ export class MascotasPerdidasComponent implements OnInit {
   mapCenterLng: number = -58.3816;
   mapZoom: number = 12;
 
-  constructor(private mascotaService: MascotaService) {}
+  constructor(
+    private mascotaService: MascotaService,
+    public authService: AuthService
+  ) {}
 
   ngOnInit() {
     this.loadPublicaciones();
@@ -112,5 +118,43 @@ export class MascotasPerdidasComponent implements OnInit {
       lat: parseFloat(publicacion.latitud),
       lng: parseFloat(publicacion.longitud)
     };
+  }
+
+  isOwner(publicacion: Publicacion): boolean {
+    const user = this.authService.getUser();
+    return user !== null && user.id === publicacion.usuarioId;
+  }
+
+  eliminarMascota(publicacion: Publicacion): void {
+    if (!confirm(`¿Estás seguro de que deseas eliminar la publicación de ${publicacion.nombreMascota}?`)) {
+      return;
+    }
+
+    const user = this.authService.getUser();
+    if (!user) {
+      alert('Debes estar autenticado para eliminar una mascota');
+      return;
+    }
+
+    // Eliminamos la PUBLICACIÓN, no solo la mascota
+    this.mascotaService.eliminarPublicacion(publicacion.id, user.id).subscribe({
+      next: () => {
+        alert('Publicación eliminada exitosamente');
+        this.loadPublicaciones();
+      },
+      error: (error) => {
+        console.error('Error eliminando publicación:', error);
+
+        if (error.status === 403) {
+          alert('No tienes permisos para eliminar esta publicación. Verifica que seas el publicador.');
+        } else if (error.status === 401) {
+          alert('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+        } else if (error.status === 404) {
+          alert('La publicación no fue encontrada.');
+        } else {
+          alert(`Error al eliminar la publicación: ${error.message || 'Error desconocido'}`);
+        }
+      }
+    });
   }
 }

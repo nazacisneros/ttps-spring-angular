@@ -65,6 +65,7 @@
       <div class="publicacion-actions">
         <button class="btn-contactar">Contactar</button>
         <button class="btn-ver-mapa" (click)="focusOnPublication(publicacion)">Ver en mapa</button>
+        <button *ngIf="isOwner(publicacion)" class="btn-eliminar" (click)="eliminarMascota(publicacion)">Eliminar</button>
       </div>
     </div>
   </div>

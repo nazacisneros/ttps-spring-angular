@@ -2,14 +2,17 @@ package ttps.spring.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import ttps.spring.entity.Mascota;
+import ttps.spring.entity.Usuario;
 import ttps.spring.exception.mascota.MascotaNoEncontradaException;
 import ttps.spring.exception.mascota.MascotaOperationException;
 import ttps.spring.exception.mascota.MascotaValidationException;
 import ttps.spring.model.ErrorResponse;
 import ttps.spring.service.GenericService;
 import ttps.spring.service.MascotaService;
+import ttps.spring.service.UsuarioService;
 
 import java.net.URI;
 import java.util.List;
@@ -19,9 +22,11 @@ import java.util.List;
 public class MascotaController extends GenericController<Mascota, Long> {
 
     private final MascotaService service;
+    private final UsuarioService usuarioService;
 
-    public MascotaController(MascotaService service) {
+    public MascotaController(MascotaService service, UsuarioService usuarioService) {
         this.service = service;
+        this.usuarioService = usuarioService;
     }
 
     @Override
@@ -77,8 +82,23 @@ public class MascotaController extends GenericController<Mascota, Long> {
     }
 
     @DeleteMapping("/{id}/usuario/{usuarioId}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id, @PathVariable Long usuarioId) {
-        service.eliminarMascota(usuarioId, id);
+    public ResponseEntity<Void> eliminar(@PathVariable Long id, @PathVariable Long usuarioId,
+            Authentication authentication) {
+        System.out.println("DEBUG Controller - Eliminar mascota:");
+        System.out.println("  PathVariable id (mascotaId): " + id);
+        System.out.println("  PathVariable usuarioId: " + usuarioId);
+        System.out.println("  Authentication.getName(): " + authentication.getName());
+
+        // Obtener el email del usuario autenticado desde el token JWT
+        String email = authentication.getName();
+        Usuario usuarioAutenticado = usuarioService.buscarPorEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        System.out.println("  Usuario autenticado ID: " + usuarioAutenticado.getId());
+
+        // El service ya valida que el usuario sea el dueño de la mascota
+        // Usamos el ID del usuario autenticado en lugar de confiar en el parámetro
+        service.eliminarMascota(usuarioAutenticado.getId(), id);
         return ResponseEntity.noContent().build();
     }
 
