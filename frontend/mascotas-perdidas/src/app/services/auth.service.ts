@@ -83,4 +83,25 @@ export class AuthService {
 
     return this.http.put(`${this.api}/me`, data);
   }
+
+  refreshUserData() {
+    // Obtener los datos actualizados del usuario desde el backend
+    this.getProfile().subscribe({
+      next: (profile) => {
+        const updatedUser: UsuarioAuth = {
+          id: profile.id,
+          nombre: profile.nombre,
+          apellido: profile.apellido,
+          email: profile.email,
+          esAdmin: profile.esAdmin
+        };
+        // Actualizar localStorage y BehaviorSubject
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        this.userSubject.next(updatedUser);
+      },
+      error: (err) => {
+        console.error('Error al refrescar datos del usuario:', err);
+      }
+    });
+  }
 }

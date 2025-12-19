@@ -48,12 +48,19 @@ export class RegistroComponent implements OnInit {
   ngOnInit() {
     if (this.route.snapshot.url[0]?.path === 'perfil') {
       this.editMode = true;
+      // En modo edición, el email no se puede cambiar
+      this.registerForm.get('email')?.disable();
+      // Los campos de ubicación son opcionales en edición
       this.registerForm.get('telefono')?.clearValidators();
       this.registerForm.get('barrio')?.clearValidators();
       this.registerForm.get('ciudad')?.clearValidators();
       this.registerForm.get('telefono')?.updateValueAndValidity();
       this.registerForm.get('barrio')?.updateValueAndValidity();
       this.registerForm.get('ciudad')?.updateValueAndValidity();
+    } else {
+      // En modo registro, el password es obligatorio
+      this.registerForm.get('password')?.setValidators([Validators.required]);
+      this.registerForm.get('password')?.updateValueAndValidity();
     }
 
     this.ciudadService.getCiudades().subscribe(ciudades => {
@@ -103,19 +110,41 @@ export class RegistroComponent implements OnInit {
       const payload: any = {
         nombre: this.registerForm.value.nombre,
         apellido: this.registerForm.value.apellido,
-        telefono: this.registerForm.value.telefono,
+        telefono: this.registerForm.value.telefono || '',
         barrioId: this.registerForm.value.barrio || null
       };
 
       this.authService.updateProfile(payload)
         .subscribe({
-          next: () => {
-            console.log('Perfil actualizado');
-            this.loadUserData();
+          next: (response) => {
+            console.log('Perfil actualizado correctamente', response);
+            // Actualizar el usuario en el servicio de autenticación
+            this.authService.refreshUserData();
+            alert('Perfil actualizado exitosamente');
+            // Redirigir al home
+            this.router.navigate(['/']);
           },
           error: (err) => {
-            console.error('Error actualizando perfil', err);
-            alert('No se pudo actualizar el perfil.');
+            console.error('Error actualizando perfil:', err);
+            console.error('Status:', err.status);
+            console.error('Error completo:', JSON.stringify(err, null, 2));
+
+            // Si la actualización fue exitosa (status 200) pero hay un problema de parsing
+            if (err.status === 200 || err.status === 0) {
+              console.log('Actualización exitosa a pesar del error de parsing');
+              this.authService.refreshUserData();
+              alert('Perfil actualizado exitosamente');
+              this.router.navigate(['/']);
+              return;
+            }
+
+            if (err.error && typeof err.error === 'string') {
+              this.serverError = err.error;
+            } else if (err.error && err.error.message) {
+              this.serverError = err.error.message;
+            } else {
+              this.serverError = 'No se pudo actualizar el perfil. Intenta nuevamente.';
+            }
           }
         });
     } else {

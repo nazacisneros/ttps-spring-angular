@@ -4,6 +4,7 @@ export interface UsuarioPerfil {
   apellido: string;
   email: string;
   telefono: string;
+  esAdmin: boolean;
   barrioId?: number;
   barrioNombre?: string;
   ciudadId?: number;

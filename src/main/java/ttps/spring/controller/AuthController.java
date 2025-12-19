@@ -79,7 +79,7 @@ class AuthController {
     }
 
     @PutMapping("/me")
-    public ResponseEntity<Usuario> editarMiPerfil(@RequestBody UsuarioUpdateRequest request,
+    public ResponseEntity<UsuarioResponse> editarMiPerfil(@RequestBody UsuarioUpdateRequest request,
             Authentication authentication) {
         String email = authentication.getName();
         Usuario existente = usuarioService.buscarPorEmail(email)
@@ -101,6 +101,6 @@ class AuthController {
         }
 
         Usuario actualizado = usuarioService.actualizar(existente.getId(), existente);
-        return ResponseEntity.ok(actualizado);
+        return ResponseEntity.ok(new UsuarioResponse(actualizado));
     }
 }
