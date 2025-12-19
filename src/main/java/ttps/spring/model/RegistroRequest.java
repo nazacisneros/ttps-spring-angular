@@ -6,7 +6,9 @@ public class RegistroRequest {
     private String email;
     private String telefono;
     private String contrasenia;
-    private Long barrioId;
+    private Long barrioId;  // Opcional - para compatibilidad con código antiguo
+    private Double latitud;
+    private Double longitud;
 
     public RegistroRequest() {
     }
@@ -57,5 +59,21 @@ public class RegistroRequest {
 
     public void setBarrioId(Long barrioId) {
         this.barrioId = barrioId;
+    }
+
+    public Double getLatitud() {
+        return latitud;
+    }
+
+    public void setLatitud(Double latitud) {
+        this.latitud = latitud;
+    }
+
+    public Double getLongitud() {
+        return longitud;
+    }
+
+    public void setLongitud(Double longitud) {
+        this.longitud = longitud;
     }
 }

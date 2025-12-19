@@ -2,15 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
-import { CiudadService, Ciudad } from '../../services/ciudad.service';
-import { BarrioService, Barrio } from '../../services/barrio.service';
+import { MapaMascotasComponent } from '../../components/mapa-mascotas/mapa-mascotas.component';
 import { ActivatedRoute } from '@angular/router';
 import { Router, RouterModule  } from '@angular/router';
 
 @Component({
   selector: 'app-registro',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, MapaMascotasComponent],
   templateUrl: './registro.component.html',
   styleUrls: ['./registro.component.css']
 })
@@ -20,8 +19,12 @@ export class RegistroComponent implements OnInit {
   userId: number | null = null;
 
   registerForm!: FormGroup;
-  ciudades: Ciudad[] = [];
-  barrios: Barrio[] = [];
+
+  // Coordenadas del mapa
+  selectedCoordinates: {lat: number, lng: number} | null = null;
+  mapCenterLat: number = -34.6037; // Buenos Aires por defecto
+  mapCenterLng: number = -58.3816;
+  mapZoom: number = 12;
 
   // Mensaje de error del servidor
   serverError: string = '';
@@ -29,8 +32,6 @@ export class RegistroComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private ciudadService: CiudadService,
-    private barrioService: BarrioService,
     private route: ActivatedRoute,
     private router: Router
   ) {
@@ -40,8 +41,8 @@ export class RegistroComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       password: [''],
       telefono: ['', Validators.required],
-      barrio: ['', Validators.required],
-      ciudad: ['', Validators.required],
+      latitud: ['', Validators.required],
+      longitud: ['', Validators.required],
     });
   }
 
@@ -52,23 +53,19 @@ export class RegistroComponent implements OnInit {
       this.registerForm.get('email')?.disable();
       // Los campos de ubicación son opcionales en edición
       this.registerForm.get('telefono')?.clearValidators();
-      this.registerForm.get('barrio')?.clearValidators();
-      this.registerForm.get('ciudad')?.clearValidators();
+      this.registerForm.get('latitud')?.clearValidators();
+      this.registerForm.get('longitud')?.clearValidators();
       this.registerForm.get('telefono')?.updateValueAndValidity();
-      this.registerForm.get('barrio')?.updateValueAndValidity();
-      this.registerForm.get('ciudad')?.updateValueAndValidity();
+      this.registerForm.get('latitud')?.updateValueAndValidity();
+      this.registerForm.get('longitud')?.updateValueAndValidity();
+
+      // Cargar datos del usuario
+      this.loadUserData();
     } else {
       // En modo registro, el password es obligatorio
       this.registerForm.get('password')?.setValidators([Validators.required]);
       this.registerForm.get('password')?.updateValueAndValidity();
     }
-
-    this.ciudadService.getCiudades().subscribe(ciudades => {
-      this.ciudades = ciudades;
-      if (this.editMode) {
-        this.loadUserData();
-      }
-    });
   }
 
   loadUserData() {
@@ -78,26 +75,27 @@ export class RegistroComponent implements OnInit {
         nombre: user.nombre,
         apellido: user.apellido,
         email: user.email,
-        telefono: user.telefono,
-        barrio: user.barrioId,
-        ciudad: user.ciudadId
+        telefono: user.telefono
       });
 
-      if (user.ciudadId) {
-        this.onCiudadChange(user.ciudadId);
-      }
+      // Si el usuario tiene coordenadas guardadas, mostrarlas en el mapa
+      // Por ahora no tenemos coordenadas en el perfil de usuario
+      // pero podríamos agregarlas en el futuro
     });
   }
 
+  onCoordinatesSelected(coordinates: {lat: number, lng: number}) {
+    this.selectedCoordinates = coordinates;
+    this.registerForm.patchValue({
+      latitud: coordinates.lat,
+      longitud: coordinates.lng
+    });
+    console.log('Coordenadas seleccionadas:', coordinates);
+  }
 
-
-  onCiudadChange(ciudadId: number) {
-    if (ciudadId) {
-      this.barrioService.getBarriosByCiudad(ciudadId).subscribe(barrios => {
-        this.barrios = barrios;
-      });
-    } else {
-      this.barrios = [];
+  cancelar() {
+    if (confirm('¿Estás seguro de que deseas cancelar? Se perderán los cambios no guardados.')) {
+      this.router.navigate([this.editMode ? '/' : '/login']);
     }
   }
 
@@ -110,9 +108,14 @@ export class RegistroComponent implements OnInit {
       const payload: any = {
         nombre: this.registerForm.value.nombre,
         apellido: this.registerForm.value.apellido,
-        telefono: this.registerForm.value.telefono || '',
-        barrioId: this.registerForm.value.barrio || null
+        telefono: this.registerForm.value.telefono || ''
       };
+
+      // Si hay coordenadas seleccionadas, enviarlas
+      if (this.selectedCoordinates) {
+        payload.latitud = this.selectedCoordinates.lat;
+        payload.longitud = this.selectedCoordinates.lng;
+      }
 
       this.authService.updateProfile(payload)
         .subscribe({
@@ -148,20 +151,23 @@ export class RegistroComponent implements OnInit {
           }
         });
     } else {
+      // Modo registro
       const payload: any = {
         nombre: this.registerForm.value.nombre,
         apellido: this.registerForm.value.apellido,
         email: this.registerForm.value.email,
         telefono: this.registerForm.value.telefono,
         password: this.registerForm.value.password,
-        barrioId: this.registerForm.value.barrio
+        latitud: this.registerForm.value.latitud,
+        longitud: this.registerForm.value.longitud
       };
 
       this.authService.register(payload)
       .subscribe({
         next: () => {
           console.log('Registro exitoso');
-          this.router.navigate(['/']);
+          alert('Usuario registrado exitosamente. Por favor inicia sesión.');
+          this.router.navigate(['/login']);
         },
         error: (error: any) => {
           console.error('Error en registro:', error);

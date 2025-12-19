@@ -1,59 +1,287 @@
-/* Contenedor principal del registro */
-:host {
-  display: block;
-  padding: 1rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  animation: fadeIn 0.6s ease-in;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* Contenedor del registro */
+/* Contenedor principal del formulario */
 .registro-container {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  padding: 2rem 3rem;
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  width: 100%;
   max-width: 1400px;
-  animation: slideUp 0.6s ease-out;
-  position: relative;
-  overflow: visible;
-  margin: 0 auto 2rem auto;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: calc(100vh - 200px);
 }
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Título principal */
-h2 {
+/* Header del formulario */
+.form-header {
   text-align: center;
-  color: #667eea;
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin: 0 0 1rem 0;
-  position: relative;
-  z-index: 1;
-  animation: slideDown 0.6s ease-out;
+  margin-bottom: 2.5rem;
+  animation: fadeInDown 0.5s ease-out;
 }
 
-@keyframes slideDown {
+.form-header h2 {
+  font-size: 2.5rem;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.subtitle {
+  color: #7f8c8d;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* Contenido del formulario (dos columnas) */
+.form-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+/* Columnas */
+.form-column {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.column-title {
+  font-size: 1.5rem;
+  color: #34495e;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 3px solid #3498db;
+  font-weight: 600;
+}
+
+/* Grupos de formulario */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.half-width {
+  flex: 1;
+}
+
+/* Labels */
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* Inputs y selects */
+.form-control {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: white;
+  font-family: inherit;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+  transform: translateY(-1px);
+}
+
+.form-control:hover {
+  border-color: #bdc3c7;
+}
+
+.form-control[readonly] {
+  background-color: #f8f9fa;
+  cursor: not-allowed;
+}
+
+/* Mensajes de error */
+.error-message {
+  color: #e74c3c;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  animation: shake 0.3s ease-in-out;
+}
+
+.server-error {
+  background: #ffe5e5;
+  border: 2px solid #e74c3c;
+  color: #c0392b;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.info-message {
+  color: #3498db;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Sección del mapa */
+.map-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.map-info-box {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1.25rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.map-instructions {
+  margin: 0;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.map-instructions strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 1.05rem;
+}
+
+.coordinates-display {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  gap: 1.5rem;
+}
+
+.coordinate-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.coord-label {
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+.coord-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+}
+
+/* Contenedor del mapa */
+.map-container {
+  flex: 1;
+  min-height: 450px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 3px solid #e0e0e0;
+}
+
+.map-error {
+  background: #ffe5e5;
+  border: 2px solid #e74c3c;
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+
+/* Botones de acción */
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  animation: fadeInUp 0.5s ease-out 0.2s both;
+}
+
+.btn-submit,
+.btn-cancel {
+  padding: 1rem 2.5rem;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-submit {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.btn-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-submit:disabled {
+  background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn-cancel {
+  background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+  color: white;
+}
+
+.btn-cancel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(127, 140, 141, 0.4);
+}
+
+.btn-icon {
+  font-size: 1.3rem;
+}
+
+/* Link de login */
+.login-link {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #7f8c8d;
+  animation: fadeInUp 0.5s ease-out 0.3s both;
+}
+
+.login-link a {
+  color: #3498db;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.login-link a:hover {
+  color: #2980b9;
+  text-decoration: underline;
+}
+
+/* Animaciones */
+@keyframes fadeInDown {
   from {
     opacity: 0;
     transform: translateY(-20px);
@@ -64,409 +292,67 @@ h2 {
   }
 }
 
-/* Icono decorativo en el título */
-h2::before {
-  content: '📝';
-  display: inline-block;
-  font-size: 2rem;
-  margin-right: 0.5rem;
-  animation: bounce 2s ease-in-out infinite;
-}
-
-@keyframes bounce {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-/* Formulario */
-form {
-  position: relative;
-  z-index: 1;
-}
-
-/* Secciones del formulario */
-.form-section {
-  margin-bottom: 1.5rem;
-  padding: 1.5rem;
-  background: rgba(102, 126, 234, 0.05);
-  border-radius: 12px;
-  border-left: 4px solid #667eea;
-  animation: fadeInSection 0.6s ease-out;
-}
-
-@keyframes fadeInSection {
+@keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateX(-20px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0);
   }
-}
-
-/* Títulos de sección */
-h3 {
-  color: #667eea;
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin: 0 0 1rem 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-h3::before {
-  content: '👤';
-  font-size: 1.5rem;
-}
-
-.form-section:nth-child(2) h3::before {
-  content: '📍';
-}
-
-/* Grupo de formulario */
-.form-group {
-  margin-bottom: 0.5rem;
-}
-
-/* Fila de formulario (para campos en línea) */
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-}
-
-/* Labels */
-label {
-  display: block;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 0.5rem;
-  font-size: 0.95rem;
-  transition: color 0.3s ease;
-}
-
-.form-group:focus-within label {
-  color: #667eea;
-}
-
-/* Inputs y selects */
-input,
-select {
-  width: 100%;
-  padding: 0.6rem 0.9rem;
-  border: 2px solid #e0e0e0;
-  border-radius: 10px;
-  font-size: 0.95rem;
-  transition: all 0.3s ease;
-  background: #ffffff;
-  color: #333;
-  font-family: inherit;
-}
-
-input::placeholder {
-  color: #999;
-  font-weight: 400;
-}
-
-input:focus,
-select:focus {
-  outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-  transform: translateY(-2px);
-}
-
-input:hover,
-select:hover {
-  border-color: #764ba2;
-}
-
-/* Select específico */
-select {
-  cursor: pointer;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23667eea' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 1rem center;
-  padding-right: 2.5rem;
-  appearance: none;
-}
-
-/* Inputs con error */
-input.ng-invalid.ng-touched,
-select.ng-invalid.ng-touched {
-  border-color: #dc3545;
-  animation: shake 0.5s ease-in-out;
 }
 
 @keyframes shake {
-  0%, 100% {
-    transform: translateX(0);
-  }
-  25% {
-    transform: translateX(-10px);
-  }
-  75% {
-    transform: translateX(10px);
-  }
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
 }
 
-input.ng-invalid.ng-touched:focus,
-select.ng-invalid.ng-touched:focus {
-  box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.1);
-}
-
-/* Mensajes de error de campos */
-.error {
-  color: #dc3545;
-  font-size: 0.8rem;
-  margin-top: 0.3rem;
-  padding: 0.4rem 0.8rem;
-  background: rgba(220, 53, 69, 0.1);
-  border-left: 3px solid #dc3545;
-  border-radius: 6px;
-  animation: slideIn 0.3s ease-out;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-10px);
+/* Responsive */
+@media (max-width: 1024px) {
+  .form-content {
+    grid-template-columns: 1fr;
   }
-  to {
-    opacity: 1;
-    transform: translateX(0);
+
+  .map-container {
+    min-height: 400px;
   }
 }
 
-.error::before {
-  content: '⚠️ ';
-  margin-right: 0.25rem;
-}
-
-/* Mensaje informativo */
-.info-message {
-  color: #0066cc;
-  font-size: 0.8rem;
-  margin-top: 0.3rem;
-  padding: 0.4rem 0.8rem;
-  background: rgba(0, 102, 204, 0.1);
-  border-left: 3px solid #0066cc;
-  border-radius: 6px;
-  animation: slideIn 0.3s ease-out;
-}
-
-.info-message::before {
-  content: 'ℹ️ ';
-  margin-right: 0.25rem;
-}
-
-/* Input deshabilitado o readonly */
-input[readonly],
-input:disabled,
-select:disabled {
-  background-color: #f5f5f5;
-  cursor: not-allowed;
-  opacity: 0.7;
-}
-
-/* Error del servidor */
-.server-error {
-  background: rgba(220, 53, 69, 0.1);
-  color: #dc3545;
-  padding: 0.75rem 1rem;
-  border-radius: 12px;
-  margin-bottom: 1rem;
-  border-left: 4px solid #dc3545;
-  font-weight: 500;
-  font-size: 0.9rem;
-  animation: slideDown 0.3s ease-out;
-  position: relative;
-  z-index: 1;
-}
-
-.server-error::before {
-  content: '❌ ';
-  margin-right: 0.5rem;
-  font-size: 1.2rem;
-}
-
-/* Botón de submit */
-button[type="submit"] {
-  width: 100%;
-  padding: 0.85rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #ffffff;
-  border: none;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 0.5rem;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-  position: relative;
-  overflow: hidden;
-  z-index: 1;
-}
-
-button[type="submit"]::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
-  transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
-}
-
-button[type="submit"]:hover::before {
-  width: 400px;
-  height: 400px;
-}
-
-button[type="submit"]:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
-}
-
-button[type="submit"]:active {
-  transform: translateY(-1px);
-}
-
-button[type="submit"]:disabled {
-  background: linear-gradient(135deg, #cccccc 0%, #999999 100%);
-  cursor: not-allowed;
-  box-shadow: none;
-  transform: none;
-}
-
-button[type="submit"]:disabled:hover {
-  transform: none;
-  box-shadow: none;
-}
-
-button[type="submit"]:disabled::before {
-  display: none;
-}
-
-/* Link de login */
-.login-link {
-  text-align: center;
-  margin-top: 0.75rem;
-  color: #666;
-  font-size: 0.95rem;
-  font-weight: 500;
-  animation: fadeIn 0.8s ease-in 0.4s backwards;
-  position: relative;
-  z-index: 1;
-}
-
-.login-link a {
-  color: #667eea;
-  text-decoration: none;
-  font-weight: 700;
-  padding: 0.3rem 0.8rem;
-  background: rgba(102, 126, 234, 0.1);
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  display: inline-block;
-  margin-left: 0.5rem;
-}
-
-.login-link a:hover {
-  background: rgba(102, 126, 234, 0.2);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-}
-
-/* Diseño responsive para tablets */
 @media (max-width: 768px) {
-  :host {
-    padding: 2rem 1rem;
-  }
-
   .registro-container {
-    padding: 2rem;
+    padding: 1rem;
   }
 
-  h2 {
+  .form-header h2 {
     font-size: 1.75rem;
   }
 
-  h2::before {
-    font-size: 2.5rem;
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .form-column {
+    padding: 1.5rem;
   }
 
   .form-row {
     grid-template-columns: 1fr;
-    gap: 0;
   }
 
-  .form-section {
-    padding: 1rem;
+  .form-actions {
+    flex-direction: column;
   }
 
-  h3 {
-    font-size: 1.2rem;
-  }
-}
-
-/* Diseño responsive para móviles */
-@media (max-width: 480px) {
-  :host {
-    padding: 1.5rem 1rem;
+  .btn-submit,
+  .btn-cancel {
+    width: 100%;
+    justify-content: center;
   }
 
-  .registro-container {
-    padding: 1.5rem;
-  }
-
-  h2 {
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-  }
-
-  h2::before {
-    font-size: 2rem;
-  }
-
-  .form-section {
-    padding: 1rem;
-    margin-bottom: 1.5rem;
-  }
-
-  h3 {
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-  }
-
-  input,
-  select {
-    padding: 0.875rem 1rem;
-    font-size: 0.95rem;
-  }
-
-  button[type="submit"] {
-    padding: 1rem;
-    font-size: 1rem;
-  }
-
-  .login-link {
-    font-size: 0.9rem;
+  .map-container {
+    min-height: 350px;
   }
 }
 
-/* Animación de inputs válidos */
-input.ng-valid.ng-touched:not([value=""]),
-select.ng-valid.ng-touched:not([value=""]) {
-  border-color: #28a745;
-}
