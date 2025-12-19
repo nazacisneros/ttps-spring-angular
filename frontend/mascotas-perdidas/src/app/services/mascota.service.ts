@@ -68,4 +68,12 @@ export class MascotaService {
   eliminarPublicacion(publicacionId: number, usuarioId: number) {
     return this.http.delete(`${this.publicacionesApi}/${publicacionId}/usuario/${usuarioId}`);
   }
+
+  obtenerPublicacionPorId(publicacionId: number) {
+    return this.http.get(`${this.publicacionesApi}/${publicacionId}/detalle`);
+  }
+
+  actualizarPublicacion(publicacionId: number, data: any) {
+    return this.http.put(`${this.publicacionesApi}/${publicacionId}/actualizar`, data);
+  }
 }

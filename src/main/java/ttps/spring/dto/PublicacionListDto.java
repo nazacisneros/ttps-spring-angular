@@ -17,11 +17,13 @@ public class PublicacionListDto {
     private String longitud;
     private Long mascotaId;
     private Long usuarioId;
+    private Long ciudadId;
+    private Long barrioId;
 
     public PublicacionListDto(Long id, LocalDate fecha, LocalDateTime hora, String estado,
             String nombreMascota, String tamanioMascota, String colorMascota,
             String descripcionMascota, String estadoMascota, String latitud, String longitud,
-            Long mascotaId, Long usuarioId) {
+            Long mascotaId, Long usuarioId, Long ciudadId, Long barrioId) {
         this.id = id;
         this.fecha = fecha;
         this.hora = hora;
@@ -35,6 +37,8 @@ public class PublicacionListDto {
         this.longitud = longitud;
         this.mascotaId = mascotaId;
         this.usuarioId = usuarioId;
+        this.ciudadId = ciudadId;
+        this.barrioId = barrioId;
     }
 
     public Long getId() {
@@ -139,5 +143,21 @@ public class PublicacionListDto {
 
     public void setUsuarioId(Long usuarioId) {
         this.usuarioId = usuarioId;
+    }
+
+    public Long getCiudadId() {
+        return ciudadId;
+    }
+
+    public void setCiudadId(Long ciudadId) {
+        this.ciudadId = ciudadId;
+    }
+
+    public Long getBarrioId() {
+        return barrioId;
+    }
+
+    public void setBarrioId(Long barrioId) {
+        this.barrioId = barrioId;
     }
 }

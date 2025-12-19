@@ -98,6 +98,20 @@ public class PublicacionController extends GenericController<Publicacion, Long> 
         }
 
         private PublicacionListDto convertToDto(Publicacion publicacion) {
+                Long ciudadId = null;
+                Long barrioId = null;
+
+                // Obtener ciudadId y barrioId de la coordenada o del usuario
+                if (publicacion.getMascota() != null && publicacion.getMascota().getUsuario() != null) {
+                        Usuario usuario = publicacion.getMascota().getUsuario();
+                        if (usuario.getBarrio() != null) {
+                                barrioId = usuario.getBarrio().getId();
+                                if (usuario.getBarrio().getCiudad() != null) {
+                                        ciudadId = usuario.getBarrio().getCiudad().getId();
+                                }
+                        }
+                }
+
                 return new PublicacionListDto(
                                 publicacion.getId(),
                                 publicacion.getFecha(),
@@ -111,7 +125,9 @@ public class PublicacionController extends GenericController<Publicacion, Long> 
                                 publicacion.getCoordenada().getLatitud(),
                                 publicacion.getCoordenada().getLongitud(),
                                 publicacion.getMascota().getId(),
-                                publicacion.getMascota().getUsuario() != null ? publicacion.getMascota().getUsuario().getId() : null);
+                                publicacion.getMascota().getUsuario() != null ? publicacion.getMascota().getUsuario().getId() : null,
+                                ciudadId,
+                                barrioId);
         }
 
         @Override
@@ -122,6 +138,34 @@ public class PublicacionController extends GenericController<Publicacion, Long> 
         @Override
         protected Long getId(Publicacion entidad) {
                 return entidad.getId();
+        }
+
+        @GetMapping("/{id}/detalle")
+        public ResponseEntity<PublicacionListDto> obtenerPublicacionDetalle(@PathVariable Long id) {
+                System.out.println("DEBUG - GET /api/publicaciones/" + id + "/detalle");
+
+                Publicacion publicacion = publicacionService.obtener(id)
+                                .orElseThrow(() -> new RuntimeException("Publicación no encontrada con ID: " + id));
+
+                System.out.println("  Publicación encontrada ID: " + publicacion.getId());
+
+                if (publicacion.getMascota() != null) {
+                        System.out.println("  Mascota: " + publicacion.getMascota().getNombre());
+                } else {
+                        System.out.println("  WARNING: Publicación sin mascota asociada!");
+                }
+
+                // Crear DTO con información completa
+                PublicacionListDto dto = convertToDto(publicacion);
+
+                System.out.println("  DTO creado:");
+                System.out.println("    - nombreMascota: " + dto.getNombreMascota());
+                System.out.println("    - ciudadId: " + dto.getCiudadId());
+                System.out.println("    - barrioId: " + dto.getBarrioId());
+                System.out.println("    - latitud: " + dto.getLatitud());
+                System.out.println("    - longitud: " + dto.getLongitud());
+
+                return ResponseEntity.ok(dto);
         }
 
         @PostMapping("/con-mascota")
@@ -214,5 +258,73 @@ public class PublicacionController extends GenericController<Publicacion, Long> 
                 System.out.println("  Publicación eliminada exitosamente");
 
                 return ResponseEntity.noContent().build();
+        }
+
+        @PutMapping("/{id}/actualizar")
+        public ResponseEntity<PublicacionResponse> actualizarPublicacion(@PathVariable Long id,
+                        @RequestBody CrearPublicacionRequest request,
+                        Authentication authentication) {
+                try {
+                        System.out.println("DEBUG Controller - Actualizar publicación:");
+                        System.out.println("  Publicación ID: " + id);
+
+                        // Obtener el email del usuario autenticado desde el token JWT
+                        String email = authentication.getName();
+                        Usuario usuarioAutenticado = usuarioService.buscarPorEmail(email)
+                                        .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+                        System.out.println("  Usuario autenticado ID: " + usuarioAutenticado.getId());
+
+                        // Obtener la publicación existente
+                        Publicacion publicacion = publicacionService.obtener(id)
+                                        .orElseThrow(() -> new RuntimeException("Publicación no encontrada"));
+
+                        // Validar que el usuario autenticado sea el publicador
+                        if (publicacion.getUsuario_publicador() == null ||
+                                        !publicacion.getUsuario_publicador().getId()
+                                                        .equals(usuarioAutenticado.getId())) {
+                                throw new RuntimeException("No tienes permiso para editar esta publicación");
+                        }
+
+                        System.out.println("  Validación OK - Actualizando datos");
+
+                        // Actualizar datos de la mascota
+                        Mascota mascota = publicacion.getMascota();
+                        if (request.getMascota() != null) {
+                                mascota.setNombre(request.getMascota().getNombre());
+                                mascota.setTamanio(request.getMascota().getTamanio());
+                                mascota.setColor(request.getMascota().getColor());
+                                mascota.setDescripcion(request.getMascota().getDescripcion());
+                                mascota.setEstado(request.getMascota().getEstado());
+                                mascotaService.actualizar(mascota.getId(), mascota);
+                        }
+
+                        // Actualizar coordenadas
+                        if (request.getCoordenadas() != null) {
+                                Coordenada coordenada = publicacion.getCoordenada();
+                                coordenada.setLatitud(String.valueOf(request.getCoordenadas().getLatitud()));
+                                coordenada.setLongitud(String.valueOf(request.getCoordenadas().getLongitud()));
+                        }
+
+                        // Actualizar estado de la publicación
+                        if (request.getEstado() != null) {
+                                publicacion.setEstado(request.getEstado());
+                        }
+
+                        // Guardar la publicación actualizada
+                        Publicacion actualizada = publicacionService.actualizar(publicacion.getId(), publicacion);
+
+                        System.out.println("  Publicación actualizada exitosamente");
+
+                        PublicacionResponse response = new PublicacionResponse(
+                                        actualizada.getId(),
+                                        "Publicación actualizada exitosamente");
+
+                        return ResponseEntity.ok(response);
+
+                } catch (Exception e) {
+                        System.err.println("Error actualizando publicación: " + e.getMessage());
+                        throw new RuntimeException("Error al actualizar la publicación: " + e.getMessage());
+                }
         }
 }

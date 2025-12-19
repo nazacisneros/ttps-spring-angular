@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { MascotaService } from '../../services/mascota.service';
 import { AuthService } from '../../services/auth.service';
 import { FiltroMascotasComponent } from '../../components/filtro-mascotas/filtro-mascotas.component';
@@ -43,7 +44,8 @@ export class MascotasPerdidasComponent implements OnInit {
 
   constructor(
     private mascotaService: MascotaService,
-    public authService: AuthService
+    public authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -123,6 +125,10 @@ export class MascotasPerdidasComponent implements OnInit {
   isOwner(publicacion: Publicacion): boolean {
     const user = this.authService.getUser();
     return user !== null && user.id === publicacion.usuarioId;
+  }
+
+  editarMascota(publicacion: Publicacion): void {
+    this.router.navigate(['/mascotas/editar', publicacion.id]);
   }
 
   eliminarMascota(publicacion: Publicacion): void {

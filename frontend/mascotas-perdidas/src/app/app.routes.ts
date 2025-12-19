@@ -14,5 +14,6 @@ export const routes: Routes = [
     { path: 'mascotas-perdidas', component: MascotasPerdidasComponent },
     { path: 'perfil', component: RegistroComponent, canActivate: [AuthGuard] },
     { path: 'mascotas/nueva', component: RegistroMascotasPerdidasComponent, canActivate: [AuthGuard] },
+    { path: 'mascotas/editar/:id', component: RegistroMascotasPerdidasComponent, canActivate: [AuthGuard] },
     { path: '**', component: PageNotFoundComponent },
   ];

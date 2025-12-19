@@ -63,9 +63,27 @@
       </div>
 
       <div class="publicacion-actions">
-        <button class="btn-contactar">Contactar</button>
-        <button class="btn-ver-mapa" (click)="focusOnPublication(publicacion)">Ver en mapa</button>
-        <button *ngIf="isOwner(publicacion)" class="btn-eliminar" (click)="eliminarMascota(publicacion)">Eliminar</button>
+        <div class="actions-general">
+          <button class="btn-contactar">
+            <span class="btn-icon">📞</span>
+            Contactar
+          </button>
+          <button class="btn-ver-mapa" (click)="focusOnPublication(publicacion)">
+            <span class="btn-icon">📍</span>
+            Ver en mapa
+          </button>
+        </div>
+
+        <div class="actions-owner" *ngIf="isOwner(publicacion)">
+          <button class="btn-editar" (click)="editarMascota(publicacion)">
+            <span class="btn-icon">✏️</span>
+            Editar
+          </button>
+          <button class="btn-eliminar" (click)="eliminarMascota(publicacion)">
+            <span class="btn-icon">🗑️</span>
+            Eliminar
+          </button>
+        </div>
       </div>
     </div>
   </div>
