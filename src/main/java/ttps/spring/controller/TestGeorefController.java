@@ -25,7 +25,6 @@ public class TestGeorefController {
     public ResponseEntity<UbicacionResponse> probarGeoref(
             @RequestParam Double lat,
             @RequestParam Double lon) {
-        System.out.println("DEBUG - Test Georef llamado con lat=" + lat + ", lon=" + lon);
         UbicacionResponse ubicacion = georefService.obtenerUbicacion(lat, lon);
 
         if (ubicacion == null) {
@@ -55,7 +54,7 @@ public class TestGeorefController {
                             : "Sin ciudad"));
 
         } catch (Exception e) {
-            System.err.println("ERROR - Error en registro de prueba: " + e.getMessage());
+            System.err.println("Error en registro de prueba: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
         }
@@ -65,7 +64,7 @@ public class TestGeorefController {
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
         ErrorResponse error = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
-                "Parámetros inválidos: " + ex.getMessage(),
+                "Parametros invalidos: " + ex.getMessage(),
                 System.currentTimeMillis());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }

@@ -142,7 +142,6 @@ export class MascotasPerdidasComponent implements OnInit {
       return;
     }
 
-    // Eliminamos la PUBLICACIÓN, no solo la mascota
     this.mascotaService.eliminarPublicacion(publicacion.id, user.id).subscribe({
       next: () => {
         alert('Publicación eliminada exitosamente');

@@ -80,7 +80,7 @@ public class UsuarioService extends GenericService<Usuario, Long> {
                     barrio = buscarOCrearBarrio(ubicacion.getBarrio(), ciudad);
                 }
             } else {
-                System.out.println("WARNING - No se pudo obtener ubicación desde Georef");
+                System.out.println(" No se pudo obtener ubicacion desde Georef");
             }
         } else if (request.getBarrioId() != null) {
             barrio = barrioService.obtener(request.getBarrioId())
@@ -123,7 +123,7 @@ public class UsuarioService extends GenericService<Usuario, Long> {
         try {
             Barrio barrio = barrioRepository.findByNombreAndCiudad(nombreBarrio, ciudad)
                     .orElseGet(() -> {
-                        System.out.println("DEBUG - Creando nuevo barrio: '" + nombreBarrio + "' en ciudad: "
+                        System.out.println("Creando nuevo barrio: '" + nombreBarrio + "' en ciudad: "
                                 + ciudad.getNombre());
 
                         Barrio nuevoBarrio = new Barrio();
@@ -136,7 +136,7 @@ public class UsuarioService extends GenericService<Usuario, Long> {
             return barrio;
 
         } catch (Exception e) {
-            System.err.println("ERROR - Error al buscar/crear barrio '" + nombreBarrio + "' en ciudad '"
+            System.err.println("Error al buscar/crear barrio '" + nombreBarrio + "' en ciudad '"
                     + ciudad.getNombre() + "': " + e.getMessage());
             e.printStackTrace();
             throw e;

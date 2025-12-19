@@ -1,6 +1,6 @@
 <div class="registro-container">
   <div class="form-header">
-    <h2>{{ editMode ? '✏️ Editar datos personales' : '📝 Registro de usuario' }}</h2>
+    <h2>{{ editMode ? ' Editar datos personales' : ' Registro de usuario' }}</h2>
     <p class="subtitle">{{ editMode ? 'Actualiza tu información personal' : 'Completa tus datos y selecciona tu ubicación en el mapa' }}</p>
   </div>
 
@@ -10,9 +10,8 @@
 
   <form [formGroup]="registerForm" (ngSubmit)="submit()">
     <div class="form-content">
-      <!-- Columna izquierda: Datos personales -->
       <div class="form-column datos-column">
-        <h3 class="column-title">👤 Datos Personales</h3>
+        <h3 class="column-title">Datos Personales</h3>
 
         <div class="form-row">
           <div class="form-group half-width">
@@ -23,7 +22,7 @@
               placeholder="Ej: Juan"
               class="form-control">
             <div *ngIf="registerForm.get('nombre')?.invalid && registerForm.get('nombre')?.touched" class="error-message">
-              <span *ngIf="registerForm.get('nombre')?.errors?.['required']">⚠️ Requerido</span>
+              <span *ngIf="registerForm.get('nombre')?.errors?.['required']">Requerido</span>
             </div>
           </div>
 
@@ -35,7 +34,7 @@
               placeholder="Ej: Pérez"
               class="form-control">
             <div *ngIf="registerForm.get('apellido')?.invalid && registerForm.get('apellido')?.touched" class="error-message">
-              <span *ngIf="registerForm.get('apellido')?.errors?.['required']">⚠️ Requerido</span>
+              <span *ngIf="registerForm.get('apellido')?.errors?.['required']">Requerido</span>
             </div>
           </div>
         </div>
@@ -50,11 +49,11 @@
             class="form-control"
             [attr.readonly]="editMode ? true : null">
           <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="error-message">
-            <span *ngIf="registerForm.get('email')?.errors?.['required']">⚠️ El email es obligatorio</span>
-            <span *ngIf="registerForm.get('email')?.errors?.['email']">⚠️ Formato de email inválido</span>
+            <span *ngIf="registerForm.get('email')?.errors?.['required']">El email es obligatorio</span>
+            <span *ngIf="registerForm.get('email')?.errors?.['email']">Formato de email inválido</span>
           </div>
           <div *ngIf="editMode" class="info-message">
-            <span>ℹ️ El email no puede ser modificado</span>
+            <span>El email no puede ser modificado</span>
           </div>
         </div>
 
@@ -66,7 +65,7 @@
             placeholder="Ej: 11 1234-5678"
             class="form-control">
           <div *ngIf="registerForm.get('telefono')?.invalid && registerForm.get('telefono')?.touched" class="error-message">
-            <span *ngIf="registerForm.get('telefono')?.errors?.['required']">⚠️ El teléfono es obligatorio</span>
+            <span *ngIf="registerForm.get('telefono')?.errors?.['required']">El teléfono es obligatorio</span>
           </div>
         </div>
 
@@ -79,14 +78,13 @@
             placeholder="Ingrese su contraseña"
             class="form-control">
           <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="error-message">
-            <span *ngIf="registerForm.get('password')?.errors?.['required']">⚠️ La contraseña es obligatoria</span>
+            <span *ngIf="registerForm.get('password')?.errors?.['required']">La contraseña es obligatoria</span>
           </div>
         </div>
       </div>
 
-      <!-- Columna derecha: Mapa -->
       <div class="form-column map-column">
-        <h3 class="column-title">📍 Tu Ubicación</h3>
+        <h3 class="column-title">Tu Ubicación</h3>
         <div class="map-info-box">
           <p class="map-instructions">
             <strong>Instrucciones:</strong><br>
@@ -116,19 +114,16 @@
         </div>
 
         <div *ngIf="!selectedCoordinates && (registerForm.get('latitud')?.touched || registerForm.get('longitud')?.touched)" class="error-message map-error">
-          ⚠️ Debes seleccionar tu ubicación en el mapa
+          Debes seleccionar tu ubicación en el mapa
         </div>
       </div>
     </div>
 
-    <!-- Botón de envío -->
     <div class="form-actions">
       <button type="submit" [disabled]="registerForm.invalid" class="btn-submit">
-        <span class="btn-icon">{{ editMode ? '💾' : '✅' }}</span>
         {{ editMode ? 'Guardar cambios' : 'Registrarse' }}
       </button>
       <button type="button" class="btn-cancel" (click)="cancelar()">
-        <span class="btn-icon">❌</span>
         Cancelar
       </button>
     </div>

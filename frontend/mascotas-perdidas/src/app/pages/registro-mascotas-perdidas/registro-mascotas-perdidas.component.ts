@@ -17,12 +17,10 @@ export class RegistroMascotasPerdidasComponent implements OnInit {
 
   mascotaForm: FormGroup;
 
-  // Modo edición
   editMode: boolean = false;
   publicacionId: number | null = null;
   mascotaId: number | null = null;
 
-  // Coordenadas
   selectedCoordinates: {lat: number, lng: number} | null = null;
   mapCenterLat: number = -34.6037; // Buenos Aires por defecto
   mapCenterLng: number = -58.3816;
@@ -51,7 +49,6 @@ export class RegistroMascotasPerdidasComponent implements OnInit {
 
   ngOnInit() {
 
-    // Detectar si estamos en modo edición
     this.route.params.subscribe(params => {
       if (params['id']) {
         this.editMode = true;
@@ -62,25 +59,18 @@ export class RegistroMascotasPerdidasComponent implements OnInit {
   }
 
   loadPublicacionData(publicacionId: number) {
-    console.log('Cargando publicación con ID:', publicacionId);
 
     this.mascotaService.obtenerPublicacionPorId(publicacionId).subscribe({
       next: (data: any) => {
-        console.log('Datos de publicación recibidos del backend:', data);
-
-        // Validar que tengamos los datos necesarios
         if (!data) {
-          console.error('No se recibieron datos de la publicación');
           alert('Error: No se recibieron datos de la publicación');
           this.router.navigate(['/mascotas-perdidas']);
           return;
         }
 
-        // Guardar IDs
         this.mascotaId = data.mascotaId;
         console.log('Mascota ID guardado:', this.mascotaId);
 
-        // Rellenar el formulario (sin ciudad y barrio ya que Georef los detecta automáticamente)
         const formData = {
           nombre: data.nombreMascota,
           tamanio: data.tamanioMascota,
@@ -91,10 +81,8 @@ export class RegistroMascotasPerdidasComponent implements OnInit {
           longitud: data.longitud
         };
 
-        console.log('Datos para rellenar formulario:', formData);
         this.mascotaForm.patchValue(formData);
 
-        // Configurar coordenadas del mapa
         if (data.latitud && data.longitud) {
           this.selectedCoordinates = {
             lat: parseFloat(data.latitud),
@@ -104,14 +92,11 @@ export class RegistroMascotasPerdidasComponent implements OnInit {
           this.mapCenterLat = parseFloat(data.latitud);
           this.mapCenterLng = parseFloat(data.longitud);
           this.mapZoom = 15;
-          console.log('Coordenadas configuradas:', this.selectedCoordinates);
         } else {
           console.warn('No hay coordenadas en los datos');
         }
       },
       error: (error) => {
-        console.error('Error completo cargando datos de publicación:', error);
-
         let errorMsg = 'Error al cargar los datos de la mascota';
         if (error.status === 404) {
           errorMsg = 'Publicación no encontrada';
@@ -146,7 +131,6 @@ export class RegistroMascotasPerdidasComponent implements OnInit {
     if (this.mascotaForm.invalid) return;
 
     if (this.editMode && this.publicacionId) {
-      // Modo edición - actualizar publicación existente
       const updateData = {
         mascota: {
           nombre: this.mascotaForm.value.nombre,
@@ -178,7 +162,6 @@ export class RegistroMascotasPerdidasComponent implements OnInit {
           }
         });
     } else {
-      // Modo creación - crear nueva publicación
       this.mascotaService.crearPublicacionMascota(this.mascotaForm.value)
         .subscribe({
           next: () => {

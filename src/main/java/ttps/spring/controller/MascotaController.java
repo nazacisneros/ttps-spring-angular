@@ -84,20 +84,11 @@ public class MascotaController extends GenericController<Mascota, Long> {
     @DeleteMapping("/{id}/usuario/{usuarioId}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id, @PathVariable Long usuarioId,
             Authentication authentication) {
-        System.out.println("DEBUG Controller - Eliminar mascota:");
-        System.out.println("  PathVariable id (mascotaId): " + id);
-        System.out.println("  PathVariable usuarioId: " + usuarioId);
-        System.out.println("  Authentication.getName(): " + authentication.getName());
 
-        // Obtener el email del usuario autenticado desde el token JWT
         String email = authentication.getName();
         Usuario usuarioAutenticado = usuarioService.buscarPorEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        System.out.println("  Usuario autenticado ID: " + usuarioAutenticado.getId());
-
-        // El service ya valida que el usuario sea el dueño de la mascota
-        // Usamos el ID del usuario autenticado en lugar de confiar en el parámetro
         service.eliminarMascota(usuarioAutenticado.getId(), id);
         return ResponseEntity.noContent().build();
     }
@@ -114,7 +105,6 @@ public class MascotaController extends GenericController<Mascota, Long> {
         return ResponseEntity.ok(mascota);
     }
 
-    // Exception Handlers
     @ExceptionHandler(MascotaNoEncontradaException.class)
     public ResponseEntity<ErrorResponse> handleMascotaNoEncontrada(MascotaNoEncontradaException e) {
         ErrorResponse error = new ErrorResponse(

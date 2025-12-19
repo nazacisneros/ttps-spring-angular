@@ -51,7 +51,6 @@ public class AvistamientoService extends GenericService<Avistamiento, Long> {
         avistamiento.setFecha(LocalDate.now());
         avistamiento.setHora(LocalDateTime.now());
 
-        // Registrar en el usuario
         usuario.registrarAvistamiento(avistamiento);
 
         return repository.save(avistamiento);
@@ -80,11 +79,11 @@ public class AvistamientoService extends GenericService<Avistamiento, Long> {
     }
 
     /*
-    @Transactional(readOnly = true)
-    public List<Avistamiento> listarPorZona() {
-        return null;
-    }
-
+     * @Transactional(readOnly = true)
+     * public List<Avistamiento> listarPorZona() {
+     * return null;
+     * }
+     * 
      */
 
 }

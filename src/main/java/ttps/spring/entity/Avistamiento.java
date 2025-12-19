@@ -18,7 +18,6 @@ public class Avistamiento extends Registro {
     @JoinColumn(name = "usuario_id")
     private Usuario usuarioAvistador;
 
-    // probando asd
     public Avistamiento() {
     }
 

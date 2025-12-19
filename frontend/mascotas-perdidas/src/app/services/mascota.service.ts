@@ -9,12 +9,10 @@ export class MascotaService {
 
   constructor(private http: HttpClient) {}
 
-  // crea solo la mascota
   crearMascota(data: any) {
     return this.http.post(this.api, data);
   }
 
-  // crea la publicacion junto con la mascota
   crearPublicacionMascota(data: any) {
     const now = new Date();
     const publicacionData = {

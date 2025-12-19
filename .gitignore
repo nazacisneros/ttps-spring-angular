@@ -9,9 +9,24 @@ target/
 .idea/jarRepositories.xml
 .idea/compiler.xml
 .idea/libraries/
+.idea/sqldialects.xml
+.idea/dataSources/
+.idea/dataSources.ids
+.idea/dataSources.local.xml
+.idea/dataSources.xml
 *.iws
 *.iml
 *.ipr
+
+### Database Files ###
+data.sql
+data_source_mapping.xml
+datasource.xml
+sqldialects.xml
+
+### Application Configuration ###
+src/main/resources/application.properties
+application.properties
 
 ### Eclipse ###
 .apt_generated
@@ -37,3 +52,6 @@ build/
 
 ### Mac OS ###
 .DS_Store
+src/main/resources/application.properties
+.idea/dataSources.xml
+data.sql

@@ -61,7 +61,6 @@ public class GeorefUbicacion {
         this.localidadCensal = localidadCensal;
     }
 
-    // Clases internas
     public static class Provincia {
         private String id;
         private String nombre;
@@ -146,4 +145,3 @@ public class GeorefUbicacion {
         }
     }
 }
-

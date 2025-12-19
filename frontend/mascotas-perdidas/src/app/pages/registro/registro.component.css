@@ -1,4 +1,4 @@
-/* Contenedor principal del formulario */
+
 .registro-container {
   max-width: 1400px;
   margin: 2rem auto;
@@ -7,7 +7,7 @@
   min-height: calc(100vh - 200px);
 }
 
-/* Header del formulario */
+
 .form-header {
   text-align: center;
   margin-bottom: 2.5rem;
@@ -28,7 +28,7 @@
   margin: 0;
 }
 
-/* Contenido del formulario (dos columnas) */
+
 .form-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -36,7 +36,7 @@
   margin-bottom: 2rem;
 }
 
-/* Columnas */
+
 .form-column {
   background: white;
   border-radius: 16px;
@@ -54,7 +54,7 @@
   font-weight: 600;
 }
 
-/* Grupos de formulario */
+
 .form-group {
   margin-bottom: 1.5rem;
 }
@@ -69,7 +69,7 @@
   flex: 1;
 }
 
-/* Labels */
+
 .form-group label {
   display: block;
   margin-bottom: 0.5rem;
@@ -78,7 +78,7 @@
   font-size: 0.95rem;
 }
 
-/* Inputs y selects */
+
 .form-control {
   width: 100%;
   padding: 0.875rem 1rem;
@@ -106,7 +106,7 @@
   cursor: not-allowed;
 }
 
-/* Mensajes de error */
+
 .error-message {
   color: #e74c3c;
   font-size: 0.875rem;
@@ -137,7 +137,7 @@
   gap: 0.25rem;
 }
 
-/* Sección del mapa */
+
 .map-column {
   display: flex;
   flex-direction: column;
@@ -189,7 +189,7 @@
   font-family: 'Courier New', monospace;
 }
 
-/* Contenedor del mapa */
+
 .map-container {
   flex: 1;
   min-height: 450px;
@@ -207,7 +207,7 @@
   margin-top: 1rem;
 }
 
-/* Botones de acción */
+
 .form-actions {
   display: flex;
   gap: 1rem;
@@ -260,7 +260,7 @@
   font-size: 1.3rem;
 }
 
-/* Link de login */
+
 .login-link {
   text-align: center;
   margin-top: 1.5rem;
@@ -280,7 +280,7 @@
   text-decoration: underline;
 }
 
-/* Animaciones */
+
 @keyframes fadeInDown {
   from {
     opacity: 0;
@@ -309,7 +309,7 @@
   75% { transform: translateX(5px); }
 }
 
-/* Responsive */
+
 @media (max-width: 1024px) {
   .form-content {
     grid-template-columns: 1fr;
