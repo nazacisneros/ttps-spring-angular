@@ -167,6 +167,12 @@ button.danger:hover {
 }
 
 /* Efectos para pantallas más pequeñas */
+@media (max-width: 968px) {
+  .acciones {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 768px) {
   :host {
     padding: 2rem 1rem;
