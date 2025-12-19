@@ -41,10 +41,14 @@ class AuthController {
     }
 
     @PostMapping("/registro")
-    public ResponseEntity<?> registrar(@RequestBody RegistroRequest request) {
+    public ResponseEntity<Map<String, Object>> registrar(@RequestBody RegistroRequest request) {
         try {
             Usuario usuario = usuarioService.registrar(request);
-            return ResponseEntity.created(URI.create("/api/usuarios/" + usuario.getId())).body(usuario);
+            return ResponseEntity.created(URI.create("/api/usuarios/" + usuario.getId()))
+                    .body(Map.of(
+                            "id", usuario.getId(),
+                            "mensaje", "Usuario registrado exitosamente",
+                            "email", usuario.getEmail()));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         } catch (Exception e) {
@@ -111,7 +115,6 @@ class AuthController {
         return ResponseEntity.ok(new UsuarioResponse(actualizado));
     }
 
-    // Exception Handlers
     @ExceptionHandler(CredencialesInvalidasException.class)
     public ResponseEntity<ErrorResponse> handleCredencialesInvalidasException(CredencialesInvalidasException ex) {
         ErrorResponse error = new ErrorResponse(
