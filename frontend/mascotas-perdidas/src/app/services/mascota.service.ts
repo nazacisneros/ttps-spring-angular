@@ -31,8 +31,7 @@ export class MascotaService {
         longitud: data.longitud
       },
       fecha: now.toISOString().split('T')[0],
-      hora: now.toISOString(),
-      estado: data.estado
+      hora: now.toISOString()
     };
 
     return this.http.post(`${this.publicacionesApi}/con-mascota`, publicacionData);

@@ -47,6 +47,9 @@ export class MapaMascotasComponent implements OnInit, OnDestroy, OnChanges {
   ngOnInit() {
     setTimeout(() => {
       this.initializeMap();
+      if (this.selectedPublicacion) {
+        setTimeout(() => this.focusOnPublicacion(this.selectedPublicacion!), 100);
+      }
     }, 300);
   }
 
