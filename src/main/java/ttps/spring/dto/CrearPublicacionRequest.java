@@ -1,8 +1,5 @@
 package ttps.spring.dto;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 public class CrearPublicacionRequest {
     private MascotaData mascota;
     private Long barrioId;
